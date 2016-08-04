@@ -610,3 +610,34 @@ top: -325px;
 }
 /*end of menu*/
 
+/*  #Mobile (Portrait)
+================================================== */
+
+    /* Note: Design for a width of 320px */
+    @media only screen and (max-width: 767px)
+          ,only screen and (max-device-width: 2303px) and (-webkit-device-pixel-ratio: 3) 
+          ,only screen and (min-device-width: 1534px) and (-webkit-device-pixel-ratio: 2)  {
+        .container { width: 94%; }
+        .container .columns,
+        .container .column { margin: 0; }
+
+        .container .one.column,
+        .container .one.columns,
+        .container .two.columns,
+        .container .three.columns,
+        .container .four.columns,
+        .container .five.columns,
+        .container .six.columns,
+        .container .seven.columns,
+        .container .eight.columns,
+        .container .nine.columns,
+        .container .ten.columns,
+        .container .eleven.columns,
+        .container .twelve.columns,
+        .container .thirteen.columns,
+        .container .fourteen.columns,
+        .container .fifteen.columns,
+        .container .sixteen.columns,
+        .container .one-third.column,
+        .container .two-thirds.column  { width: 100%; }
+    }
