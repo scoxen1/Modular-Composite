@@ -33,6 +33,7 @@
                 <li class="menu-li btn-cust-select" id="btn1">Product Selector <img alt="" src="allAssets/img/icon_quote.png" class="menu-image" /> </li>
                 <li class="menu-li btn-new-customer" id="btn2">New Customer <img alt="" src="allAssets/img/icon_new_customer.png" class="menu-image" /> </li>
                 <li class="menu-li btn-quote-history" id="btn3">Quote History <img alt="" src="allAssets/img/icon_quote_history.png" class="menu-image" /> </li>
+                <li class="menu-li btn-debug" >Debug Console <img alt="" src="allAssets/img/icon_quote_history.png" class="menu-image" /> </li>
             </ul>
         </div>
     </div>
@@ -549,6 +550,20 @@
         </div>
     </div>
     <!--/quoteHistory-->
+    <!--debugging-->
+    <div id="debug-console" class="app-page">
+        <div class="container-page">
+            <div class='row'>
+                <h2>Debug Console</h2>
+                <div class="btns">
+                    <a href="#" id="btn-debug-clear" class="btn-standard" onclick='javascript:ClearInlineLog();' >Clear Console</a>
+                </div>
+                <div class="debug-console" style='max-height:500px; overflow-y:scroll;border:1px solid #a2aaad; width:90%;margin:3%; padding:5px 2%;'>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--/debugging-->
     <!-- message box -->
     <div class="message-container-bg"></div>
     <div class="message-container">

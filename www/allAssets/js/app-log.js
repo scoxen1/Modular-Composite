@@ -55,6 +55,12 @@ function LogMessage(message) {
 	else {
 	    air.trace(message);
 	}
+	//log to debug console page
+    $('div.debug-console').append('<p>' + message + '</p>');
+}
+
+function ClearInlineLog() {
+    $('div.debug-console').html('');
 }
 
 function ShowMessage(title, message, type, sender) {

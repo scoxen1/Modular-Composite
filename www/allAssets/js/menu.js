@@ -235,6 +235,28 @@ $(function () {
         }
         return false;
     });
+
+    //----------------------------------------------------------------------------------
+    //		Debug log - show
+    //----------------------------------------------------------------------------------
+    $("li.btn-debug-show").on("tap", function () {
+        try {
+            HideAllPagesAndNavButtons();
+            LogMessage(_moduleName_menu + ": btn-debug-show - show log");
+            $("#debug-console").show();
+            //scroll so we can see the last message
+            $("html, body").animate({ scrollTop: $("div.debug-console").offset().top + 400 }, 0);
+            $("div.debug-console").scrollTop(function () { return this.scrollHeight; });
+            _currentPageId = 'debug-console';
+            closeMainMenu();
+        }
+        catch (error) {
+            ShowMessage(_applicationName, error.message, 'error', $(this));
+            LogMessage(_moduleName_menu + ": " + $(this).attr('id') + " - Error: " + error.message + '...Details: ' + error.details);
+        }
+        return false;
+    });
+
 });
 
 
