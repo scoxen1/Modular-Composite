@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="org.arthritis.tools.yourexercisesolution" version="0.0.9" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0" xmlns:gap="http://phonegap.com/ns/1.0">
+    <name>Your Exercise Solution</name>
+    <description>
+    Exercise can help ease arthritis pain – but which one is best? The answer is as unique as you are. Your Exercise Solution tool provides a personalized exercise plan. You will be able to 
+    identify where you have pain, select your current fitness level, choose an activity that is right for you and learn modifications that let you exercise safely.
+  </description>
+    <author email="websites@arthritis.org" href="http://www.arthritis.org">Arthritis Foundation</author>
+    <content src="index.html" />
+    <icon src="icon.png" />
+    <splash src="splash.png" />
+    <access origin="http://tools.arthritis.org" />
+    <access origin="https://tools.arthritis.org" />
+    <access origin="http://www.arthritis.org" />
+    <access origin="https://www.arthritis.org" />
+    <allow-intent href="http://*/*" />
+    <allow-intent href="https://*/*" />
+    <allow-intent href="tel:*" />
+    <allow-intent href="sms:*" />
+    <allow-intent href="mailto:*" />
+    <allow-intent href="geo:*" />
+    <preference name="permissions" value="none" />
+    <preference name="orientation" value="default" />
+    <preference name="target-device" value="universal" />
+    <preference name="fullscreen" value="false" />
+    <preference name="webviewbounce" value="true" />
+    <preference name="prerendered-icon" value="true" />
+    <preference name="stay-in-webview" value="false" />
+    <preference name="detect-data-types" value="true" />
+    <preference name="exit-on-suspend" value="false" />
+    <preference name="show-splash-screen-spinner" value="true" />
+    <preference name="auto-hide-splash-screen" value="true" />
+    <preference name="disable-cursor" value="false" />
+    <preference name="android-minSdkVersion" value="14" />
+    <preference name="android-installLocation" value="auto" />
+    <preference name="StatusBarBackgroundColor" value="black-opaque" />
+    <preference name="StatusBarStyle" value="lightcontent" />
+    <preference name="StatusBarOverlaysWebView" value="false" />
+    <preference name="SplashScreenDelay" value="2000" />
+</widget>

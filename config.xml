@@ -1,0 +1,89 @@
+<widget xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0" id="com.voith.modularcomposite" version="0.0.9">
+  <name>Modular Composite</name>
+  <description>
+    Modular Composite description here
+  </description>
+  <author href="http://www.voith-it-solutions.com" email="websites@voith-it-solutions.com">VOITH</author>
+  <content src="index.html"/>
+  <preference name="permissions" value="none"/>
+  <preference name="orientation" value="landscape"/>
+  <preference name="target-device" value="universal"/>
+  <preference name="fullscreen" value="false"/>
+  <preference name="webviewbounce" value="true"/>
+  <preference name="prerendered-icon" value="true"/>
+  <preference name="stay-in-webview" value="false"/>
+  <preference name="detect-data-types" value="true"/>
+  <preference name="exit-on-suspend" value="false"/>
+  <preference name="show-splash-screen-spinner" value="true"/>
+  <preference name="auto-hide-splash-screen" value="true"/>
+  <preference name="disable-cursor" value="false"/>
+  <preference name="android-minSdkVersion" value="14"/>
+  <preference name="android-installLocation" value="auto"/>
+  <preference name="StatusBarBackgroundColor" value="black-opaque" />
+  <preference name="StatusBarStyle" value="lightcontent" />
+  <preference name="StatusBarOverlaysWebView" value="false" />
+  <preference name="SplashScreenDelay" value="2000" />
+  <plugin name="cordova-plugin-whitelist" spec="1.2.1" />
+  <plugin name="cordova-plugin-statusbar" spec="2.0.0" />
+  <plugin name="org.apache.cordova.battery-status" source="pgb" spec="0.2.12" />
+  <plugin name="org.apache.cordova.camera" source="pgb" spec="0.3.6" />
+  <plugin name="org.apache.cordova.console" source="pgb" spec="0.2.13" />
+  <plugin name="org.apache.cordova.contacts" source="pgb" spec="0.2.16" />
+  <plugin name="org.apache.cordova.device" source="pgb" spec="0.3.0" />
+  <plugin name="org.apache.cordova.device-motion" source="pgb" spec="0.2.11" />
+  <plugin name="org.apache.cordova.device-orientation" source="pgb" spec="0.3.11" />
+  <plugin name="org.apache.cordova.dialogs" source="pgb" spec="0.3.0" />
+  <plugin name="org.apache.cordova.file" source="pgb" spec="1.3.3" />
+  <plugin name="org.apache.cordova.file-transfer" source="pgb" spec="0.5.0" />
+  <plugin name="org.apache.cordova.geolocation" source="pgb" spec="0.3.12" />
+  <plugin name="org.apache.cordova.globalization" source="pgb" spec="0.3.4" />
+  <plugin name="org.apache.cordova.inappbrowser" source="pgb" spec="0.6.0" />
+  <plugin name="org.apache.cordova.media" source="pgb" spec="0.2.16" />
+  <plugin name="org.apache.cordova.media-capture" source="pgb" spec="0.3.6" />
+  <plugin name="org.apache.cordova.network-information" source="pgb" spec="0.2.15" />
+  <plugin name="org.apache.cordova.splashscreen" source="pgb" spec="1.0.0" />
+  <plugin name="org.apache.cordova.vibration" source="pgb" spec="0.3.13" />  <plugin name="cordova-plugin-file-opener2" />
+  
+  <platform name="android">
+    <icon src="images/icons/icon-android-72-72.png" qualifier="ldpi"/>
+    <icon src="images/icons/icon-android-72-72.png" qualifier="mdpi"/>
+    <icon src="images/icons/icon-android-72-72.png" qualifier="hdpi"/>
+    <icon src="images/icons/icon-android-96-96.png" qualifier="xhdpi"/>
+    <splash src="images/splash/splash-200-320.png" qualifier="port-ldpi"/>
+    <splash src="images/splash/splash-320-200.png" qualifier="land-ldpi"/>
+    <splash src="images/splash/splash-320-480.png" qualifier="port-mdpi"/>
+    <splash src="images/splash/splash-480-320.png" qualifier="land-mdpi"/>
+    <splash src="images/splash/splash-800-480.png" qualifier="port-hdpi"/>
+    <splash src="images/splash/splash-480-800.png" qualifier="land-hdpi"/>
+    <splash src="images/splash/splash-720-1280.png" qualifier="port-xhdpi"/>
+    <splash src="images/splash/splash-1280-720.png" qualifier="land-xhdpi"/>
+  </platform>
+  <platform name="ios">
+    <icon src="images/icons/icons-72-72.png" width="57" height="57"/>
+    <icon src="images/icons/icons-72-72.png" width="72" height="72"/>
+    <icon src="images/icons/icons-114-114.png" width="114" height="114"/>
+    <icon src="images/icons/icons-144-144.png" width="144" height="144"/>
+    <splash src="images/splash/splash-320-480.png" width="320" height="480"/>
+    <splash src="images/splash/splash-640-960.png" width="640" height="960"/>
+    <splash src="images/splash/splash-640-1136.png" width="640" height="1136"/>
+    <splash src="images/splash/splash-768-1024.png" width="768" height="1024"/>
+    <splash src="images/splash/splash-1024-768.png" width="1024" height="768"/>
+  </platform>
+  <icon src="icon.png"/>
+  <splash src="splash.png" />
+  <allow-navigation href="*" />  
+  <allow-intent href="http://*/*"/>
+  <allow-intent href="https://*/*"/>
+  <allow-intent href="tel:*"/>
+  <allow-intent href="sms:*"/>
+  <allow-intent href="mailto:*"/>
+  <allow-intent href="geo:*"/>
+  <platform name="android">
+    <allow-intent href="market:*"/>
+  </platform>
+  <platform name="ios">
+    <allow-intent href="itms:*"/>
+    <allow-intent href="itms-apps:*"/>
+	<preference name="Orientation" value="landscape" />  <!--force app to only show in landscape -->
+  </platform>
+</widget>

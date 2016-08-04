@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<feed xml:base="http://itnappwss2t/sites/mobile_app_store/app_data_cnt/MOD_COMP/_vti_bin/listdata.svc/" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices" xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns="http://www.w3.org/2005/Atom">
+  <title type="text">ApplicationType</title>
+  <id>http://itnappwss2t/sites/mobile_app_store/app_data_cnt/MOD_COMP/_vti_bin/listdata.svc/ApplicationType/</id>
+  <updated>2016-05-17T19:52:53Z</updated>
+  <link rel="self" title="ApplicationType" href="ApplicationType" />
+  <entry m:etag="W/&quot;3&quot;">
+    <id>http://itnappwss2t/sites/mobile_app_store/app_data_cnt/MOD_COMP/_vti_bin/listdata.svc/ApplicationType(2)</id>
+    <title type="text">Calendar</title>
+    <updated>2016-05-17T15:51:29-04:00</updated>
+    <author>
+      <name />
+    </author>
+    <link rel="edit" title="ApplicationTypeItem" href="ApplicationType(2)" />
+    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/CreatedBy" type="application/atom+xml;type=entry" title="CreatedBy" href="ApplicationType(2)/CreatedBy" />
+    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/ModifiedBy" type="application/atom+xml;type=entry" title="ModifiedBy" href="ApplicationType(2)/ModifiedBy" />
+    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Attachments" type="application/atom+xml;type=feed" title="Attachments" href="ApplicationType(2)/Attachments" />
+    <category term="Microsoft.SharePoint.DataService.ApplicationTypeItem" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />
+    <content type="application/xml">
+      <m:properties>
+        <d:SectionName>Calendar</d:SectionName>
+        <d:ProductLine>ROLLS</d:ProductLine>
+        <d:Sequence m:type="Edm.Double">1</d:Sequence>
+        <d:ApplType>Abrasion</d:ApplType>
+        <d:ShowInList m:type="Edm.Boolean">true</d:ShowInList>
+        <d:UpdateVersion m:type="Edm.Double">1</d:UpdateVersion>
+        <d:ContentTypeID>0x0100C00297CA17CF0A41AAA708EA8D2E7E0F</d:ContentTypeID>
+        <d:Id m:type="Edm.Int32">2</d:Id>
+        <d:ContentType>Item</d:ContentType>
+        <d:Modified m:type="Edm.DateTime">2016-05-17T15:51:29</d:Modified>
+        <d:Created m:type="Edm.DateTime">2015-10-06T14:06:15</d:Created>
+        <d:CreatedById m:type="Edm.Int32">19</d:CreatedById>
+        <d:ModifiedById m:type="Edm.Int32">19</d:ModifiedById>
+        <d:Owshiddenversion m:type="Edm.Int32">3</d:Owshiddenversion>
+        <d:Version>1.0</d:Version>
+        <d:Path>/sites/mobile_app_store/app_data_cnt/MOD_COMP/Lists/Application Type</d:Path>
+      </m:properties>
+    </content>
+  </entry>
+  <entry m:etag="W/&quot;3&quot;">
+    <id>http://itnappwss2t/sites/mobile_app_store/app_data_cnt/MOD_COMP/_vti_bin/listdata.svc/ApplicationType(3)</id>
+    <title type="text">Calendar</title>
+    <updated>2016-05-17T15:51:44-04:00</updated>
+    <author>
+      <name />
+    </author>
+    <link rel="edit" title="ApplicationTypeItem" href="ApplicationType(3)" />
+    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/CreatedBy" type="application/atom+xml;type=entry" title="CreatedBy" href="ApplicationType(3)/CreatedBy" />
+    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/ModifiedBy" type="application/atom+xml;type=entry" title="ModifiedBy" href="ApplicationType(3)/ModifiedBy" />
+    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Attachments" type="application/atom+xml;type=feed" title="Attachments" href="ApplicationType(3)/Attachments" />
+    <category term="Microsoft.SharePoint.DataService.ApplicationTypeItem" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />
+    <content type="application/xml">
+      <m:properties>
+        <d:SectionName>Calendar</d:SectionName>
+        <d:ProductLine>ROLLS</d:ProductLine>
+        <d:Sequence m:type="Edm.Double">2</d:Sequence>
+        <d:ApplType>Improved Barring Resistance</d:ApplType>
+        <d:ShowInList m:type="Edm.Boolean">true</d:ShowInList>
+        <d:UpdateVersion m:type="Edm.Double">1</d:UpdateVersion>
+        <d:ContentTypeID>0x0100C00297CA17CF0A41AAA708EA8D2E7E0F</d:ContentTypeID>
+        <d:Id m:type="Edm.Int32">3</d:Id>
+        <d:ContentType>Item</d:ContentType>
+        <d:Modified m:type="Edm.DateTime">2016-05-17T15:51:44</d:Modified>
+        <d:Created m:type="Edm.DateTime">2015-10-06T14:06:15</d:Created>
+        <d:CreatedById m:type="Edm.Int32">19</d:CreatedById>
+        <d:ModifiedById m:type="Edm.Int32">19</d:ModifiedById>
+        <d:Owshiddenversion m:type="Edm.Int32">3</d:Owshiddenversion>
+        <d:Version>1.0</d:Version>
+        <d:Path>/sites/mobile_app_store/app_data_cnt/MOD_COMP/Lists/Application Type</d:Path>
+      </m:properties>
+    </content>
+  </entry>
+  <entry m:etag="W/&quot;3&quot;">
+    <id>http://itnappwss2t/sites/mobile_app_store/app_data_cnt/MOD_COMP/_vti_bin/listdata.svc/ApplicationType(4)</id>
+    <title type="text">Calendar</title>
+    <updated>2016-05-17T15:51:45-04:00</updated>
+    <author>
+      <name />
+    </author>
+    <link rel="edit" title="ApplicationTypeItem" href="ApplicationType(4)" />
+    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/CreatedBy" type="application/atom+xml;type=entry" title="CreatedBy" href="ApplicationType(4)/CreatedBy" />
+    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/ModifiedBy" type="application/atom+xml;type=entry" title="ModifiedBy" href="ApplicationType(4)/ModifiedBy" />
+    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Attachments" type="application/atom+xml;type=feed" title="Attachments" href="ApplicationType(4)/Attachments" />
+    <category term="Microsoft.SharePoint.DataService.ApplicationTypeItem" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />
+    <content type="application/xml">
+      <m:properties>
+        <d:SectionName>Calendar</d:SectionName>
+        <d:ProductLine>ROLLS</d:ProductLine>
+        <d:Sequence m:type="Edm.Double">3</d:Sequence>
+        <d:ApplType>Improved Impact Resistance</d:ApplType>
+        <d:ShowInList m:type="Edm.Boolean">true</d:ShowInList>
+        <d:UpdateVersion m:type="Edm.Double">1</d:UpdateVersion>
+        <d:ContentTypeID>0x0100C00297CA17CF0A41AAA708EA8D2E7E0F</d:ContentTypeID>
+        <d:Id m:type="Edm.Int32">4</d:Id>
+        <d:ContentType>Item</d:ContentType>
+        <d:Modified m:type="Edm.DateTime">2016-05-17T15:51:45</d:Modified>
+        <d:Created m:type="Edm.DateTime">2015-10-06T14:06:16</d:Created>
+        <d:CreatedById m:type="Edm.Int32">19</d:CreatedById>
+        <d:ModifiedById m:type="Edm.Int32">19</d:ModifiedById>
+        <d:Owshiddenversion m:type="Edm.Int32">3</d:Owshiddenversion>
+        <d:Version>1.0</d:Version>
+        <d:Path>/sites/mobile_app_store/app_data_cnt/MOD_COMP/Lists/Application Type</d:Path>
+      </m:properties>
+    </content>
+  </entry>
+  <entry m:etag="W/&quot;3&quot;">
+    <id>http://itnappwss2t/sites/mobile_app_store/app_data_cnt/MOD_COMP/_vti_bin/listdata.svc/ApplicationType(5)</id>
+    <title type="text">Calendar</title>
+    <updated>2016-05-17T15:51:51-04:00</updated>
+    <author>
+      <name />
+    </author>
+    <link rel="edit" title="ApplicationTypeItem" href="ApplicationType(5)" />
+    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/CreatedBy" type="application/atom+xml;type=entry" title="CreatedBy" href="ApplicationType(5)/CreatedBy" />
+    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/ModifiedBy" type="application/atom+xml;type=entry" title="ModifiedBy" href="ApplicationType(5)/ModifiedBy" />
+    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Attachments" type="application/atom+xml;type=feed" title="Attachments" href="ApplicationType(5)/Attachments" />
+    <category term="Microsoft.SharePoint.DataService.ApplicationTypeItem" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />
+    <content type="application/xml">
+      <m:properties>
+        <d:SectionName>Calendar</d:SectionName>
+        <d:ProductLine>ROLLS</d:ProductLine>
+        <d:Sequence m:type="Edm.Double">4</d:Sequence>
+        <d:ApplType>High Gloss</d:ApplType>
+        <d:ShowInList m:type="Edm.Boolean">true</d:ShowInList>
+        <d:UpdateVersion m:type="Edm.Double">1</d:UpdateVersion>
+        <d:ContentTypeID>0x0100C00297CA17CF0A41AAA708EA8D2E7E0F</d:ContentTypeID>
+        <d:Id m:type="Edm.Int32">5</d:Id>
+        <d:ContentType>Item</d:ContentType>
+        <d:Modified m:type="Edm.DateTime">2016-05-17T15:51:51</d:Modified>
+        <d:Created m:type="Edm.DateTime">2015-10-06T14:06:16</d:Created>
+        <d:CreatedById m:type="Edm.Int32">19</d:CreatedById>
+        <d:ModifiedById m:type="Edm.Int32">19</d:ModifiedById>
+        <d:Owshiddenversion m:type="Edm.Int32">3</d:Owshiddenversion>
+        <d:Version>1.0</d:Version>
+        <d:Path>/sites/mobile_app_store/app_data_cnt/MOD_COMP/Lists/Application Type</d:Path>
+      </m:properties>
+    </content>
+  </entry>
+  <entry m:etag="W/&quot;3&quot;">
+    <id>http://itnappwss2t/sites/mobile_app_store/app_data_cnt/MOD_COMP/_vti_bin/listdata.svc/ApplicationType(6)</id>
+    <title type="text">Calendar</title>
+    <updated>2016-05-17T15:52:04-04:00</updated>
+    <author>
+      <name />
+    </author>
+    <link rel="edit" title="ApplicationTypeItem" href="ApplicationType(6)" />
+    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/CreatedBy" type="application/atom+xml;type=entry" title="CreatedBy" href="ApplicationType(6)/CreatedBy" />
+    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/ModifiedBy" type="application/atom+xml;type=entry" title="ModifiedBy" href="ApplicationType(6)/ModifiedBy" />
+    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Attachments" type="application/atom+xml;type=feed" title="Attachments" href="ApplicationType(6)/Attachments" />
+    <category term="Microsoft.SharePoint.DataService.ApplicationTypeItem" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />
+    <content type="application/xml">
+      <m:properties>
+        <d:SectionName>Calendar</d:SectionName>
+        <d:ProductLine>ROLLS</d:ProductLine>
+        <d:Sequence m:type="Edm.Double">5</d:Sequence>
+        <d:ApplType>Anti Static</d:ApplType>
+        <d:ShowInList m:type="Edm.Boolean">false</d:ShowInList>
+        <d:UpdateVersion m:type="Edm.Double">1</d:UpdateVersion>
+        <d:ContentTypeID>0x0100C00297CA17CF0A41AAA708EA8D2E7E0F</d:ContentTypeID>
+        <d:Id m:type="Edm.Int32">6</d:Id>
+        <d:ContentType>Item</d:ContentType>
+        <d:Modified m:type="Edm.DateTime">2016-05-17T15:52:04</d:Modified>
+        <d:Created m:type="Edm.DateTime">2015-10-06T14:06:16</d:Created>
+        <d:CreatedById m:type="Edm.Int32">19</d:CreatedById>
+        <d:ModifiedById m:type="Edm.Int32">19</d:ModifiedById>
+        <d:Owshiddenversion m:type="Edm.Int32">3</d:Owshiddenversion>
+        <d:Version>1.0</d:Version>
+        <d:Path>/sites/mobile_app_store/app_data_cnt/MOD_COMP/Lists/Application Type</d:Path>
+      </m:properties>
+    </content>
+  </entry>
+  <entry m:etag="W/&quot;3&quot;">
+    <id>http://itnappwss2t/sites/mobile_app_store/app_data_cnt/MOD_COMP/_vti_bin/listdata.svc/ApplicationType(7)</id>
+    <title type="text">Calendar</title>
+    <updated>2016-05-17T15:52:06-04:00</updated>
+    <author>
+      <name />
+    </author>
+    <link rel="edit" title="ApplicationTypeItem" href="ApplicationType(7)" />
+    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/CreatedBy" type="application/atom+xml;type=entry" title="CreatedBy" href="ApplicationType(7)/CreatedBy" />
+    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/ModifiedBy" type="application/atom+xml;type=entry" title="ModifiedBy" href="ApplicationType(7)/ModifiedBy" />
+    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Attachments" type="application/atom+xml;type=feed" title="Attachments" href="ApplicationType(7)/Attachments" />
+    <category term="Microsoft.SharePoint.DataService.ApplicationTypeItem" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />
+    <content type="application/xml">
+      <m:properties>
+        <d:SectionName>Calendar</d:SectionName>
+        <d:ProductLine>ROLLS</d:ProductLine>
+        <d:Sequence m:type="Edm.Double">6</d:Sequence>
+        <d:ApplType>Anti Sticky</d:ApplType>
+        <d:ShowInList m:type="Edm.Boolean">false</d:ShowInList>
+        <d:UpdateVersion m:type="Edm.Double">1</d:UpdateVersion>
+        <d:ContentTypeID>0x0100C00297CA17CF0A41AAA708EA8D2E7E0F</d:ContentTypeID>
+        <d:Id m:type="Edm.Int32">7</d:Id>
+        <d:ContentType>Item</d:ContentType>
+        <d:Modified m:type="Edm.DateTime">2016-05-17T15:52:06</d:Modified>
+        <d:Created m:type="Edm.DateTime">2015-10-06T14:06:16</d:Created>
+        <d:CreatedById m:type="Edm.Int32">19</d:CreatedById>
+        <d:ModifiedById m:type="Edm.Int32">19</d:ModifiedById>
+        <d:Owshiddenversion m:type="Edm.Int32">3</d:Owshiddenversion>
+        <d:Version>1.0</d:Version>
+        <d:Path>/sites/mobile_app_store/app_data_cnt/MOD_COMP/Lists/Application Type</d:Path>
+      </m:properties>
+    </content>
+  </entry>
+  <entry m:etag="W/&quot;3&quot;">
+    <id>http://itnappwss2t/sites/mobile_app_store/app_data_cnt/MOD_COMP/_vti_bin/listdata.svc/ApplicationType(8)</id>
+    <title type="text">Calendar</title>
+    <updated>2016-05-17T15:52:11-04:00</updated>
+    <author>
+      <name />
+    </author>
+    <link rel="edit" title="ApplicationTypeItem" href="ApplicationType(8)" />
+    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/CreatedBy" type="application/atom+xml;type=entry" title="CreatedBy" href="ApplicationType(8)/CreatedBy" />
+    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/ModifiedBy" type="application/atom+xml;type=entry" title="ModifiedBy" href="ApplicationType(8)/ModifiedBy" />
+    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Attachments" type="application/atom+xml;type=feed" title="Attachments" href="ApplicationType(8)/Attachments" />
+    <category term="Microsoft.SharePoint.DataService.ApplicationTypeItem" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />
+    <content type="application/xml">
+      <m:properties>
+        <d:SectionName>Calendar</d:SectionName>
+        <d:ProductLine>ROLLS</d:ProductLine>
+        <d:Sequence m:type="Edm.Double">7</d:Sequence>
+        <d:ApplType>Repairability</d:ApplType>
+        <d:ShowInList m:type="Edm.Boolean">false</d:ShowInList>
+        <d:UpdateVersion m:type="Edm.Double">1</d:UpdateVersion>
+        <d:ContentTypeID>0x0100C00297CA17CF0A41AAA708EA8D2E7E0F</d:ContentTypeID>
+        <d:Id m:type="Edm.Int32">8</d:Id>
+        <d:ContentType>Item</d:ContentType>
+        <d:Modified m:type="Edm.DateTime">2016-05-17T15:52:11</d:Modified>
+        <d:Created m:type="Edm.DateTime">2015-10-06T14:06:16</d:Created>
+        <d:CreatedById m:type="Edm.Int32">19</d:CreatedById>
+        <d:ModifiedById m:type="Edm.Int32">19</d:ModifiedById>
+        <d:Owshiddenversion m:type="Edm.Int32">3</d:Owshiddenversion>
+        <d:Version>1.0</d:Version>
+        <d:Path>/sites/mobile_app_store/app_data_cnt/MOD_COMP/Lists/Application Type</d:Path>
+      </m:properties>
+    </content>
+  </entry>
+</feed>
