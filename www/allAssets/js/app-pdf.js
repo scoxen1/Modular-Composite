@@ -341,14 +341,14 @@ function savePDFToDisk(doc, pdfFilePath) {
         //pdfWriteToFileDirect("4_" + pdfFilePath, doc.output('blob'), onWriteComplete);
         //pdfWriteToFileDirect("5_" + pdfFilePath, doc.output('arraybuffer'), onWriteComplete);
         //pdfByteData: PDF saves BUT PDF does not have images
-        pdfWriteToFileDirect(pdfFilePath, pdfByteData, onWriteComplete);
+//        pdfWriteToFileDirect(pdfFilePath, pdfByteData, onWriteComplete);
 
         //nothing happened
         //window.open(doc.output("datauristring"), "_system");
         //nothing happened
         //window.open(doc.output("datauri"), "_system");
         //PDF opens in app's window but can't save or do anything with it
-        //doc.save("4_" + pdfFilePath);
+        doc.save(pdfFilePath);
         //console.log('doc save...after last save attempt');
         //_pdfOutput = buffer;
 //window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, yGotFS, onFileSystemError);
