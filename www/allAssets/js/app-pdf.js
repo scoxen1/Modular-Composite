@@ -62,7 +62,7 @@ function _buildPDFDoc(quote) {
         //it also has white space at top, to get the layout to work well, draw image first and then add in header, prod name 
         // so that the image is behind this other stuff
         // generate a layered image on a canvas and save to base64 string to be used downstream
-LogMessage(_moduleName_appPDFHelper + ": _buildPDFDoc - layered image");
+        LogMessage(_moduleName_appPDFHelper + ": _buildPDFDoc - layered image");
         var prodImageData = Utility_GenerateLayeredImageAsBase64(quote, false);
         //original size is 560x560, canvas is 560x560
         doc.addImage(prodImageData, 'JPEG', xCoord - 10, yCoord - 10, 100, 100); //imgdata, format, x,y,w,h
@@ -80,7 +80,7 @@ LogMessage(_moduleName_appPDFHelper + ": _buildPDFDoc - layered image");
     //logo in header (or text to represent company info)
     if (_includeImages) {
         //Logo image
-		var imgDataLogo = Utility_ImageToBase64('image-conversion-canvas','imgLogo', 135, 31);
+        var imgDataLogo = Utility_ImageToBase64('image-conversion-canvas', 'imgLogo', 135, 31);
         doc.addImage(imgDataLogo, 'JPEG', xCoordThree + colWidth - 50, 7, (135 * .35), (31 * .35)); //imgdata, format, x,y,w,h - //original size is 135x31
         //doc.addImage(img, 'png', xCoordThree + colWidth - 50, 7, (135 * .35), (31 * .35)); //imgdata, format, x,y,w,h - //original size is 135x31
         ////    var imgData =
@@ -134,9 +134,9 @@ LogMessage(_moduleName_appPDFHelper + ": _buildPDFDoc - layered image");
             doc.text(xCoordTwo, yCoordTwo, item.Caption);
             if (_includeImages) {
                 //load an image that has been pre-loaded into page
-				var imgId = item.IconName_Blue.replace("allAssets/img/attribute_icons/", "");
-				imgId = 'imgIcon' + imgId.replace(".png", "");
-				var imgData = Utility_ImageToBase64('image-conversion-canvas', imgId, 335, 335, false);
+                var imgId = item.IconName_Blue.replace("allAssets/img/attribute_icons/", "");
+                imgId = 'imgIcon' + imgId.replace(".png", "");
+                var imgData = Utility_ImageToBase64('image-conversion-canvas', imgId, 335, 335, false);
                 doc.addImage(imgData, 'JPEG', xCoordTwo + valueOffset - 8, yCoordTwo - 4, 5, 5); //imgdata, format, x,y,w,h
             }
             doc.text(xCoordTwo + valueOffset, yCoordTwo, item.Rank);
@@ -326,11 +326,59 @@ function savePDFToDisk(doc, pdfFilePath) {
         _pdfOutput = doc.output();
         //_pdfOutput = doc.output('blob');
         //convert to array for save to disk
-        var buffer = new ArrayBuffer(_pdfOutput.length);
-        var array = new Uint8Array(buffer);
-        for (var i = 0; i < _pdfOutput.length; i++) {
-            array[i] = _pdfOutput.charCodeAt(i);
-        }
+//        var buffer = new ArrayBuffer(_pdfOutput.length);
+//        var array = new Uint8Array(buffer);
+//        for (var i = 0; i < _pdfOutput.length; i++) {
+//            array[i] = _pdfOutput.charCodeAt(i);
+//        }
+
+        var buffer = function () {
+            var data = doc.output(), len = data.length,
+                ab = new ArrayBuffer(len), u8 = new Uint8Array(ab);
+            while (len--) u8[len] = data.charCodeAt(len);
+            return ab;
+        };
+        var blob = function () {
+            var data = doc.output('arraybuffer');
+            return new Blob([data], { type: "application/pdf" });
+        };
+        var blob2 = function () {
+            var data = doc.output(), len = data.length,
+                ab = new ArrayBuffer(len), u8 = new Uint8Array(ab);
+            while (len--) u8[len] = data.charCodeAt(len);
+            //return new Blob([data], { type: "application/pdf" });
+            try {
+                var blob = new Blob([ab], { type: "application/pdf" });
+                console.debug("case 1");
+                return blob;
+            }
+            catch (e) {
+                window.BlobBuilder = window.BlobBuilder ||
+                                                     window.WebKitBlobBuilder ||
+                                                     window.MozBlobBuilder ||
+                                                     window.MSBlobBuilder;
+                if (e.name == 'TypeError' && window.BlobBuilder) {
+                    var bb = new BlobBuilder();
+                    bb.append(ab);
+                    console.debug("case 2");
+                    return bb.getBlob("application/pdf");
+
+                }
+                else if (e.name == "InvalidStateError") {
+                    // InvalidStateError (tested on FF13 WinXP)
+                    console.debug("case 3");
+                    return new Blob([ab], { type: "application/pdf" });
+
+                }
+                else {
+                    // We're screwed, blob constructor unsupported entirely
+                    console.debug("Error");
+                }
+            }
+        };
+        //var btoa = doc.output('btoa');
+        var oBtoa = btoa(doc.output());
+
         //PDF saves BUT says PDF is not in correct format
         //pdfWriteToFile("0_" + pdfFilePath, _pdfOutput, onWriteComplete);
         //pdfWriteToFile("1_" + pdfFilePath, doc.output('blob'), onWriteComplete);
@@ -338,7 +386,12 @@ function savePDFToDisk(doc, pdfFilePath) {
         //pdfByteData: PDF saves BUT PDF does not have images
         //pdfWriteToFile("3_" + pdfFilePath, pdfByteData, onWriteComplete);
 
+        //PDF saves BUT says PDF is not in correct format
         //pdfWriteToFileDirect("4_" + pdfFilePath, doc.output('blob'), onWriteComplete);
+        //pdfWriteToFileDirect("4a_" + pdfFilePath, buffer, onWriteComplete);
+        //pdfWriteToFileDirect("4b_" + pdfFilePath, blob, onWriteComplete);
+        //pdfWriteToFileDirect("4c_" + pdfFilePath, blob2, onWriteComplete);
+        //pdfWriteToFileDirect("4d_" + pdfFilePath, oBtoa, onWriteComplete);
         //pdfWriteToFileDirect("5_" + pdfFilePath, doc.output('arraybuffer'), onWriteComplete);
         //pdfByteData: PDF saves BUT PDF does not have images
 //        pdfWriteToFileDirect(pdfFilePath, pdfByteData, onWriteComplete);
@@ -348,15 +401,41 @@ function savePDFToDisk(doc, pdfFilePath) {
         //nothing happened
         //window.open(doc.output("datauri"), "_system");
         //PDF opens in app's window but can't save or do anything with it
-        //doc.save("4_" + pdfFilePath);
+//      doc.save("4_" + pdfFilePath);
         //console.log('doc save...after last save attempt');
         //_pdfOutput = buffer;
-//window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, yGotFS, onFileSystemError);
+        //window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, yGotFS, onFileSystemError);
 
-//zWriteToFile(pdfFilePath, { foo: 'bar' }, onWriteComplete);
-//getAndWriteFile(pdfFilePath, _pdfOutput);
-//viewFile(pdfFilePath);
+        //zWriteToFile(pdfFilePath, { foo: 'bar' }, onWriteComplete);
+        //getAndWriteFile(pdfFilePath, _pdfOutput);
+        //viewFile(pdfFilePath);
+
+        downloadFile(pdfFilePath, doc.output("datauristring"));
     }
+}
+
+function downloadFile(fileName, datauristring)
+{
+    var filePath = localDataDirectory() + fileName;
+    LogMessage(_moduleName_appPDFHelper + ": downloadFile - " + filePath);
+
+    var fileTransfer = new FileTransfer();
+    //var uri = encodeURI("http://some.server.com/download.php");
+    var uri = datauristring;
+
+    fileTransfer.download(
+        uri,
+        filePath,
+        function (entry) {
+            console.log("download complete: " + entry.toURL());
+        },
+        function (error) {
+            console.log("download error source " + error.source);
+            console.log("download error target " + error.target);
+            console.log("download error code" + error.code);
+        },
+        false
+    );
 }
 
 /*
@@ -384,11 +463,10 @@ function yGotFileWriter(writer) {
 */
 
 
-function onWriteComplete(fileName)
-{
+function onWriteComplete(fileName) {
     LogMessage(_moduleName_appPDFHelper + ": onWriteComplete");
     openFile(fileName);
-	//readFromFile(fileName, function (data) {
+    //readFromFile(fileName, function (data) {
     //    console.log('read from file...' + data.toString());
     //    alert(data.toString());
     //});
@@ -404,31 +482,21 @@ function localDataDirectory() {
 };
 
 // Open File from disk using fileOpener2 plugin
-function openFile(fileName)
-{
+function openFile(fileName) {
     var filePath = localDataDirectory() + fileName;
     LogMessage(_moduleName_appPDFHelper + ": openFile - " + filePath);
 
-    //if (fileOpener2 == undefined) console.log("fileOpener2 undefined");
-    //if (cordova == undefined) console.log("cordova undefined");
-    //else if (cordova.plugins == undefined) console.log("cordova.plugins undefined");
-    //else if (cordova.plugins.fileOpener2 == undefined) console.log("cordova.plugins.fileOpener2 undefined");
-    //if (window.plugins == undefined) console.log("window.plugins undefined");
-    //else if (window.plugins.fileOpener2 == undefined) console.log("window.plugins.fileOpener2 undefined");
-    //if (window.cordova == undefined) console.log("window.cordova undefined");
-    //else if (window.cordova.plugins == undefined) console.log("window.cordova.plugins undefined");
-    //else if (window.cordova.plugins.fileOpener2 == undefined) console.log("window.cordova.plugins.fileOpener2 undefined");
     cordova.plugins.fileOpener2.open(
         filePath,
         'application/pdf',
         {
-            error: function () { 
-				ShowMessage('Open Quote PDF','An error occurred opening ' + fileName, 'error', $(this));
-				LogMessage(_moduleName_appPDFHelper + ": openFile Error: " + filePath);
-			},
-            success: function () { 
-				LogMessage(_moduleName_appPDFHelper + ": openFile Success: " + filePath);
-			}
+            error: function () {
+                ShowMessage('Open Quote PDF', 'An error occurred opening ' + fileName, 'error', $(this));
+                LogMessage(_moduleName_appPDFHelper + ": openFile Error: " + filePath);
+            },
+            success: function () {
+                LogMessage(_moduleName_appPDFHelper + ": openFile Success: " + filePath);
+            }
         }
     );
 }
@@ -463,21 +531,21 @@ function openFile(fileName)
 
 function pdfWriteToFileDirect(fileName, data, callBackFn) {
     window.resolveLocalFileSystemURL(localDataDirectory(), function (directoryEntry) {
-		LogMessage(_moduleName_appPDFHelper + ": pdfWriteToFileDirect: " + fileName + ", full Path: " + directoryEntry.fullPath);
+        LogMessage(_moduleName_appPDFHelper + ": pdfWriteToFileDirect: " + fileName + ", full Path: " + directoryEntry.fullPath);
         directoryEntry.getFile(fileName, { create: true }, function (fileEntry) {
             fileEntry.createWriter(function (fileWriter) {
                 fileWriter.onwriteend = function (e) {
                     //callback to take some action once write completes
-					LogMessage(_moduleName_appPDFHelper + ": pdfWriteToFileDirect: write data - end");
-					callBackFn(fileName);
+                    LogMessage(_moduleName_appPDFHelper + ": pdfWriteToFileDirect: write data - end");
+                    callBackFn(fileName);
                 };
 
                 fileWriter.onerror = function (e) {
-					ShowMessage('Save Quote PDF','An error occurred saving ' + fileName, 'error', $(this));
-					LogMessage(_moduleName_appPDFHelper + ": pdfWriteToFileDirect Error: " + filePath + ". Error details: " + e.toString());
+                    ShowMessage('Save Quote PDF', 'An error occurred saving ' + fileName, 'error', $(this));
+                    LogMessage(_moduleName_appPDFHelper + ": pdfWriteToFileDirect Error: " + filePath + ". Error details: " + e.toString());
                 };
 
-				LogMessage(_moduleName_appPDFHelper + ": pdfWriteToFileDirect: write data - start");
+                LogMessage(_moduleName_appPDFHelper + ": pdfWriteToFileDirect: write data - start");
                 fileWriter.write(data);
             }, fileErrorHandler.bind(null, fileName));
         }, fileErrorHandler.bind(null, fileName));
@@ -564,8 +632,7 @@ var fileErrorHandler = function (fileName, e) {
 }
 
 /*Read/write sample*/
-function getAndWriteFile(filename, contents)
-{
+function getAndWriteFile(filename, contents) {
     //window.requestFileSystem(type, size, successCallback, opt_errorCallback)
     window.resolveLocalFileSystemURL(cordova.file.dataDirectory, function (dir) {
         console.log("file data directory..." + dir);
@@ -585,8 +652,7 @@ function getAndWriteFile(filename, contents)
     });
 }
 
-function onCreateWriterFail(evt)
-{
+function onCreateWriterFail(evt) {
     console.log("Error...:" + evt);
 }
 
@@ -596,7 +662,7 @@ function viewFile(filename) {
         console.log("dataDirectory = " + cordova.file.dataDirectory);
         //alert("root = " + fs.root.toURL());
         fs.root.getFile(filename, { create: false, exclusive: true });
-        window.open(cordova.file.dataDirectory + '/' + filename , '_blank', 'location=yes');
+        window.open(cordova.file.dataDirectory + '/' + filename, '_blank', 'location=yes');
     }, function () {
         alert("failed to get file system");
     });
@@ -612,52 +678,51 @@ function viewFile(filename) {
 var _pdfFileName = null;
 var _pdfOutput = null;
 
-function pg_SaveFile(doc, pdfFilePath)
-{
-	_pdfFileName = pdfFilePath;
-	console.log("PDF to save: " + _pdfFileName);
-	
-	//NEXT SAVE IT TO THE DEVICE'S LOCAL FILE SYSTEM
-	console.log("file system...");
-	_pdfOutput = doc.output();
-	window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, gotFS, onFileSystemError);
-/*
-	window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
-	 
-	   console.log("fileSystem.name: " + fileSystem.name);
-	   console.log("fileSystem.root.name: " + fileSystem.root.name);
-	   console.log("fileSystem.root.fullPath: " + fileSystem.root.fullPath);
-	 
-	   fileSystem.root.getFile(pdfFilePath, {create: true}, function(entry) {
-		  var fileEntry = entry;
-		  console.log("Entry: " + entry);
-	 
-		  entry.createWriter(function(writer) {
-			 writer.onwrite = function(evt) {
-			 console.log("write success");
-			 alert ("write complete");
-			 pg_OpenInViewer(_pdfFileName);
-		  };
-	 
-		  console.log("writing to file");
-			 writer.write( pdfOutput );
-		  }, function(error) {
-			 console.log(error);
-		  });
-	 
-	   }, function(error){
-		  console.log(error);
-	   });
-	},
-	function(event){
-	 console.log( evt.target.error.code );
-	});
-}
-*/
+function pg_SaveFile(doc, pdfFilePath) {
+    _pdfFileName = pdfFilePath;
+    console.log("PDF to save: " + _pdfFileName);
+
+    //NEXT SAVE IT TO THE DEVICE'S LOCAL FILE SYSTEM
+    console.log("file system...");
+    _pdfOutput = doc.output();
+    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, gotFS, onFileSystemError);
+    /*
+        window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
+         
+           console.log("fileSystem.name: " + fileSystem.name);
+           console.log("fileSystem.root.name: " + fileSystem.root.name);
+           console.log("fileSystem.root.fullPath: " + fileSystem.root.fullPath);
+         
+           fileSystem.root.getFile(pdfFilePath, {create: true}, function(entry) {
+              var fileEntry = entry;
+              console.log("Entry: " + entry);
+         
+              entry.createWriter(function(writer) {
+                 writer.onwrite = function(evt) {
+                 console.log("write success");
+                 alert ("write complete");
+                 pg_OpenInViewer(_pdfFileName);
+              };
+         
+              console.log("writing to file");
+                 writer.write( pdfOutput );
+              }, function(error) {
+                 console.log(error);
+              });
+         
+           }, function(error){
+              console.log(error);
+           });
+        },
+        function(event){
+         console.log( evt.target.error.code );
+        });
+    }
+    */
 }
 
 function gotFS(fileSystem) {
-	fileSystem.root.getFile(_pdfFileName, {create: true, exclusive: false}, gotFileEntry, onFileSystemError);
+    fileSystem.root.getFile(_pdfFileName, { create: true, exclusive: false }, gotFileEntry, onFileSystemError);
 }
 
 function gotFileEntry(fileEntry) {
@@ -665,96 +730,93 @@ function gotFileEntry(fileEntry) {
 }
 
 function gotFileWriter(writer) {
-    writer.onwriteend = function(evt) {
+    writer.onwriteend = function (evt) {
         console.log("contents of file now 'some sample text'");
-        writer.truncate(11);  
-        writer.onwriteend = function(evt) {
+        writer.truncate(11);
+        writer.onwriteend = function (evt) {
             console.log("contents of file now 'some sample'");
             writer.seek(4);
             writer.write(" different text");
-            writer.onwriteend = function(evt){
+            writer.onwriteend = function (evt) {
                 console.log("contents of file now 'some different text'");
             }
         };
     };
     writer.write("some sample text");
 }
-	
-
-    function pg_OpenInViewer (pdfFilePath)
-    {
-        _pdfFileName = pdfFilePath;
-        console.log("PDF to save: " + _pdfFileName);
-        window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, onGotFileSystem, onFileSystemError);
-    }
-
-    function onGotFileSystem(fileSystem) {
-        fileSystem.root.getFile(_pdfFileName, null, onGotFileEntry, onFileSystemError);
-    }
-
-    function onGotFileEntry(fileEntry) {
-        fileEntry.file(onGotFile, onFileSystemError);
-    }
-
-    function onGotFile(file){
-        readDataUrl(file);
-    }
-
-    function readDataUrl(file) {
-        var reader = new FileReader();
-        reader.onloadend = function(evt) {
-            console.log("Read as data URL");
-            console.log(evt.target.result);
-        };
-        reader.readAsDataURL(file);
-    }	
-
-    function onFileSystemError(evt) {
-        console.log("on File System Error: " + evt.target.error.code);
-    }
 
 
-    //----------------------------------------------------------------------------------
-    //		openPDFInViewer
-    //----------------------------------------------------------------------------------
-    function openPDFInViewer(quote) {
+function pg_OpenInViewer(pdfFilePath) {
+    _pdfFileName = pdfFilePath;
+    console.log("PDF to save: " + _pdfFileName);
+    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, onGotFileSystem, onFileSystemError);
+}
 
-        //    var pdfFilePath = _pdfFilePath(quote);
-        //	Quote_Update(quote);
-        //	quoteView_load();
-        //	var htmlData = $('#quote-wrapper').html();
-        //	window.html2pdf.create(
-        //		"<html><head></head><body>" + htmlData + "</body></html>",
-        //		"~/Documents/voith/modular-composite/" + pdfFilePath, // on iOS,
-        //		// "test.pdf", on Android (will be stored in /mnt/sdcard/at.modalog.cordova.plugin.html2pdf/test.pdf)
-        //		onCreatePDF_Success,
-        //		onCreatePDF_Error
-        //	);
+function onGotFileSystem(fileSystem) {
+    fileSystem.root.getFile(_pdfFileName, null, onGotFileEntry, onFileSystemError);
+}
 
-        //     pdf.htmlToPDF({
-        //            data: "<html><head></head><body>" + htmlData + "</body></html>",
-        //            documentSize: "A4",
-        //            landscape: "portrait",
-        //            type: "base64"
-        //       }, onCreatePDF_Success, onCreatePDF_Error);
-        //return;
+function onGotFileEntry(fileEntry) {
+    fileEntry.file(onGotFile, onFileSystemError);
+}
 
-        var pdfFilePath = _pdfFilePath(quote);
+function onGotFile(file) {
+    readDataUrl(file);
+}
 
-        LogMessage(_moduleName_appPDFHelper + ": openPDFInViewer - " + pdfFilePath);
+function readDataUrl(file) {
+    var reader = new FileReader();
+    reader.onloadend = function (evt) {
+        console.log("Read as data URL");
+        console.log(evt.target.result);
+    };
+    reader.readAsDataURL(file);
+}
 
-        //generate the PDF file first
-        var doc = _buildPDFDoc(quote);
-        //save
-        savePDFToDisk(doc, pdfFilePath);
-    }
+function onFileSystemError(evt) {
+    console.log("on File System Error: " + evt.target.error.code);
+}
 
-    function onCreatePDF_Success ()
-    {
-        ShowMessage('Generate PDF', 'The PDF was saved', 'info', null);
-    }
 
-    function onCreatePDF_Error ()
-    {
-        ShowMessage('Generate PDF', 'An error occurred generating the PDF', 'error', null);
-    }
+//----------------------------------------------------------------------------------
+//		openPDFInViewer
+//----------------------------------------------------------------------------------
+function openPDFInViewer(quote) {
+
+    //    var pdfFilePath = _pdfFilePath(quote);
+    //	Quote_Update(quote);
+    //	quoteView_load();
+    //	var htmlData = $('#quote-wrapper').html();
+    //	window.html2pdf.create(
+    //		"<html><head></head><body>" + htmlData + "</body></html>",
+    //		"~/Documents/voith/modular-composite/" + pdfFilePath, // on iOS,
+    //		// "test.pdf", on Android (will be stored in /mnt/sdcard/at.modalog.cordova.plugin.html2pdf/test.pdf)
+    //		onCreatePDF_Success,
+    //		onCreatePDF_Error
+    //	);
+
+    //     pdf.htmlToPDF({
+    //            data: "<html><head></head><body>" + htmlData + "</body></html>",
+    //            documentSize: "A4",
+    //            landscape: "portrait",
+    //            type: "base64"
+    //       }, onCreatePDF_Success, onCreatePDF_Error);
+    //return;
+
+    var pdfFilePath = _pdfFilePath(quote);
+
+    LogMessage(_moduleName_appPDFHelper + ": openPDFInViewer - " + pdfFilePath);
+
+    //generate the PDF file first
+    var doc = _buildPDFDoc(quote);
+    //save
+    savePDFToDisk(doc, pdfFilePath);
+}
+
+function onCreatePDF_Success() {
+    ShowMessage('Generate PDF', 'The PDF was saved', 'info', null);
+}
+
+function onCreatePDF_Error() {
+    ShowMessage('Generate PDF', 'An error occurred generating the PDF', 'error', null);
+}
