@@ -410,11 +410,11 @@ function savePDFToDisk(doc, pdfFilePath) {
         //getAndWriteFile(pdfFilePath, _pdfOutput);
         //viewFile(pdfFilePath);
 
-        downloadFile(pdfFilePath, doc.output("datauristring"));
+        downloadFile(pdfFilePath, doc.output("datauristring"), onWriteComplete);
     }
 }
 
-function downloadFile(fileName, datauristring)
+function downloadFile(fileName, datauristring, callBackFn)
 {
     var filePath = localDataDirectory() + fileName;
     LogMessage(_moduleName_appPDFHelper + ": downloadFile - " + filePath);
@@ -422,12 +422,16 @@ function downloadFile(fileName, datauristring)
     var fileTransfer = new FileTransfer();
     //var uri = encodeURI("http://some.server.com/download.php");
     var uri = datauristring;
+    var uri = encodeURI(datauristring);
+
+    LogMessage(_moduleName_appPDFHelper + ": downloadFile - uri: " + uri);
 
     fileTransfer.download(
         uri,
         filePath,
         function (entry) {
-            console.log("download complete: " + entry.toURL());
+			LogMessage(_moduleName_appPDFHelper + ": download complete - " + filePath);
+			callBackFn(fileName);
         },
         function (error) {
             console.log("download error source " + error.source);
@@ -819,4 +823,4 @@ function onCreatePDF_Success() {
 
 function onCreatePDF_Error() {
     ShowMessage('Generate PDF', 'An error occurred generating the PDF', 'error', null);
-}
+}	
