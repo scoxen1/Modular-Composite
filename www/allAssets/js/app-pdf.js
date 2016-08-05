@@ -348,7 +348,7 @@ function savePDFToDisk(doc, pdfFilePath) {
         //nothing happened
         //window.open(doc.output("datauri"), "_system");
         //PDF opens in app's window but can't save or do anything with it
-        doc.save(pdfFilePath);
+        //doc.save("4_" + pdfFilePath);
         //console.log('doc save...after last save attempt');
         //_pdfOutput = buffer;
 //window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, yGotFS, onFileSystemError);
