@@ -332,16 +332,16 @@ function savePDFToDisk(doc, pdfFilePath) {
             array[i] = _pdfOutput.charCodeAt(i);
         }
         //PDF saves BUT says PDF is not in correct format
-        //pdfWriteToFile("0_" + pdfFilePath, _pdfOutput, zOnWriteComplete);
-        //pdfWriteToFile("1_" + pdfFilePath, doc.output('blob'), zOnWriteComplete);
-        //pdfWriteToFile("2_" + pdfFilePath, doc.output('arraybuffer'), zOnWriteComplete);
+        //pdfWriteToFile("0_" + pdfFilePath, _pdfOutput, onWriteComplete);
+        //pdfWriteToFile("1_" + pdfFilePath, doc.output('blob'), onWriteComplete);
+        //pdfWriteToFile("2_" + pdfFilePath, doc.output('arraybuffer'), onWriteComplete);
         //pdfByteData: PDF saves BUT PDF does not have images
-        //pdfWriteToFile("3_" + pdfFilePath, pdfByteData, zOnWriteComplete);
+        //pdfWriteToFile("3_" + pdfFilePath, pdfByteData, onWriteComplete);
 
-        //pdfWriteToFileDirect("4_" + pdfFilePath, doc.output('blob'), zOnWriteComplete);
-        //pdfWriteToFileDirect("5_" + pdfFilePath, doc.output('arraybuffer'), zOnWriteComplete);
+        //pdfWriteToFileDirect("4_" + pdfFilePath, doc.output('blob'), onWriteComplete);
+        //pdfWriteToFileDirect("5_" + pdfFilePath, doc.output('arraybuffer'), onWriteComplete);
         //pdfByteData: PDF saves BUT PDF does not have images
-        pdfWriteToFileDirect("6_" + pdfFilePath, pdfByteData, zOnWriteComplete);
+        pdfWriteToFileDirect(pdfFilePath, pdfByteData, onWriteComplete);
 
         //nothing happened
         //window.open(doc.output("datauristring"), "_system");
@@ -353,12 +353,13 @@ function savePDFToDisk(doc, pdfFilePath) {
         //_pdfOutput = buffer;
 //window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, yGotFS, onFileSystemError);
 
-//zWriteToFile(pdfFilePath, { foo: 'bar' }, zOnWriteComplete);
+//zWriteToFile(pdfFilePath, { foo: 'bar' }, onWriteComplete);
 //getAndWriteFile(pdfFilePath, _pdfOutput);
 //viewFile(pdfFilePath);
     }
 }
 
+/*
 function yGotFS(fileSystem) {
     console.log('fileSystem.root-Full Path:' + fileSystem.root.fullPath);
     fileSystem.root.getFile("scTest.pdf", { create: true, exclusive: true }, yGotFileEntry, onFileSystemError);
@@ -374,22 +375,23 @@ function yGotFileWriter(writer) {
         // for real-world usage, you might consider passing a success callback
         console.log('Write of file "' + 'sctest.pdf' + '"" completed.');
         //callBackFn(fileName);
-        //zReadFromFile('sctest.pdf', null);
+        //readFromFile('sctest.pdf', null);
     };
 
     writer.write(_pdfOutput);
     //writer.write(doc.output());
 }
+*/
 
 
-
-function zOnWriteComplete(fileName)
+function onWriteComplete(fileName)
 {
-    console.log('Write complete...');
-    zReadFromFile(fileName, function (data) {
-        console.log('read from file...' + data.toString());
-        alert(data.toString());
-    });
+    LogMessage(_moduleName_appPDFHelper + ": onWriteComplete");
+    openFile(fileName);
+	//readFromFile(fileName, function (data) {
+    //    console.log('read from file...' + data.toString());
+    //    alert(data.toString());
+    //});
 }
 
 function localDataDirectory() {
@@ -400,6 +402,37 @@ function localDataDirectory() {
         return cordova.file.documentsDirectory;
     }
 };
+
+// Open File from disk using fileOpener2 plugin
+function openFile(fileName)
+{
+    var filePath = localDataDirectory() + fileName;
+    LogMessage(_moduleName_appPDFHelper + ": openFile - " + filePath);
+
+    //if (fileOpener2 == undefined) console.log("fileOpener2 undefined");
+    //if (cordova == undefined) console.log("cordova undefined");
+    //else if (cordova.plugins == undefined) console.log("cordova.plugins undefined");
+    //else if (cordova.plugins.fileOpener2 == undefined) console.log("cordova.plugins.fileOpener2 undefined");
+    //if (window.plugins == undefined) console.log("window.plugins undefined");
+    //else if (window.plugins.fileOpener2 == undefined) console.log("window.plugins.fileOpener2 undefined");
+    //if (window.cordova == undefined) console.log("window.cordova undefined");
+    //else if (window.cordova.plugins == undefined) console.log("window.cordova.plugins undefined");
+    //else if (window.cordova.plugins.fileOpener2 == undefined) console.log("window.cordova.plugins.fileOpener2 undefined");
+    cordova.plugins.fileOpener2.open(
+        filePath,
+        'application/pdf',
+        {
+            error: function () { 
+				ShowMessage('Open Quote PDF','An error occurred opening ' + fileName, 'error', $(this));
+				LogMessage(_moduleName_appPDFHelper + ": openFile Error: " + filePath);
+			},
+            success: function () { 
+				LogMessage(_moduleName_appPDFHelper + ": openFile Success: " + filePath);
+			}
+        }
+    );
+}
+
 
 //function zWriteToFile(fileName, data, callBackFn) {
 //    fileName = "sc-test.txt";
@@ -428,6 +461,29 @@ function localDataDirectory() {
 //    }, fileErrorHandler.bind(null, fileName));
 //}
 
+function pdfWriteToFileDirect(fileName, data, callBackFn) {
+    window.resolveLocalFileSystemURL(localDataDirectory(), function (directoryEntry) {
+		LogMessage(_moduleName_appPDFHelper + ": pdfWriteToFileDirect: " + fileName + ", full Path: " + directoryEntry.fullPath);
+        directoryEntry.getFile(fileName, { create: true }, function (fileEntry) {
+            fileEntry.createWriter(function (fileWriter) {
+                fileWriter.onwriteend = function (e) {
+                    //callback to take some action once write completes
+					LogMessage(_moduleName_appPDFHelper + ": pdfWriteToFileDirect: write data - end");
+					callBackFn(fileName);
+                };
+
+                fileWriter.onerror = function (e) {
+					ShowMessage('Save Quote PDF','An error occurred saving ' + fileName, 'error', $(this));
+					LogMessage(_moduleName_appPDFHelper + ": pdfWriteToFileDirect Error: " + filePath + ". Error details: " + e.toString());
+                };
+
+				LogMessage(_moduleName_appPDFHelper + ": pdfWriteToFileDirect: write data - start");
+                fileWriter.write(data);
+            }, fileErrorHandler.bind(null, fileName));
+        }, fileErrorHandler.bind(null, fileName));
+    }, fileErrorHandler.bind(null, fileName));
+}
+
 function pdfWriteToFile(fileName, data, callBackFn) {
     window.resolveLocalFileSystemURL(localDataDirectory(), function (directoryEntry) {
         console.log('directoryEntry-Full Path:' + directoryEntry.fullPath);
@@ -453,37 +509,9 @@ function pdfWriteToFile(fileName, data, callBackFn) {
     }, fileErrorHandler.bind(null, fileName));
 }
 
-function pdfWriteToFileDirect(fileName, data, callBackFn) {
-    window.resolveLocalFileSystemURL(localDataDirectory(), function (directoryEntry) {
-        console.log('directoryEntry-Full Path:' + directoryEntry.fullPath);
-        directoryEntry.getFile(fileName, { create: true }, function (fileEntry) {
-            fileEntry.createWriter(function (fileWriter) {
-                fileWriter.onwriteend = function (e) {
-                    // for real-world usage, you might consider passing a success callback
-                    console.log('fileEntry-Full Path:' + fileEntry.fullPath);
-                    console.log('Write-complete: ' + fileName);
-                    callBackFn(fileName);
-                };
-
-                fileWriter.onerror = function (e) {
-                    // you could hook this up with our global error handler, or pass in an error callback
-                    console.log('Write failed: ' + e.toString());
-                };
-
-                console.log('Write-start.');
-                fileWriter.write(data);
-            }, fileErrorHandler.bind(null, fileName));
-        }, fileErrorHandler.bind(null, fileName));
-    }, fileErrorHandler.bind(null, fileName));
-}
-
-function zReadFromFile(fileName, callBackFn) {
-
+function readFromFile(fileName, callBackFn) {
     var filePath = localDataDirectory() + fileName;
-    console.log('read filePath: ' + filePath);
-	openFile(filePath);
-	return;
-
+    LogMessage(_moduleName_appPDFHelper + ": readFromFile - " + filePath);
     window.open(filePath, '_system');
     //openFile(filePath); - TBD - cordova.plugins undefined
     return;
@@ -507,29 +535,6 @@ function zReadFromFile(fileName, callBackFn) {
         }, fileErrorHandler.bind(null, fileName));
     }, fileErrorHandler.bind(null, fileName));
 }
-
-function openFile(filePath)
-{
-    //if (fileOpener2 == undefined) console.log("fileOpener2 undefined");
-    if (cordova == undefined) console.log("cordova undefined");
-    else if (cordova.plugins == undefined) console.log("cordova.plugins undefined");
-    else if (cordova.plugins.fileOpener2 == undefined) console.log("cordova.plugins.fileOpener2 undefined");
-    if (window.plugins == undefined) console.log("window.plugins undefined");
-    else if (window.plugins.fileOpener2 == undefined) console.log("window.plugins.fileOpener2 undefined");
-    if (window.cordova == undefined) console.log("window.cordova undefined");
-    else if (window.cordova.plugins == undefined) console.log("window.cordova.plugins undefined");
-    else if (window.cordova.plugins.fileOpener2 == undefined) console.log("window.cordova.plugins.fileOpener2 undefined");
-    cordova.plugins.fileOpener2.open(
-        filePath,
-        'application/pdf',
-        {
-            error: function () { alert('Error opening file');},
-            success: function () { alert('Success opening file'); }
-        }
-    );
-}
-
-
 
 var fileErrorHandler = function (fileName, e) {
     var msg = '';
