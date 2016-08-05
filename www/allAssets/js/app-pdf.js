@@ -478,20 +478,21 @@ function pdfWriteToFileDirect(fileName, data, callBackFn) {
 }
 
 function zReadFromFile(fileName, callBackFn) {
+
+    var filePath = localDataDirectory() + fileName;
+    console.log('read filePath: ' + filePath);
 	openFile(filePath);
 	return;
 
-    var pathToFile = localDataDirectory() + fileName;
-    console.log('read pathToFile: ' + pathToFile);
-    window.open(pathToFile, '_system');
-    //openFile(pathToFile); - TBD - cordova.plugins undefined
+    window.open(filePath, '_system');
+    //openFile(filePath); - TBD - cordova.plugins undefined
     return;
-    window.resolveLocalFileSystemURL(pathToFile, function (fileEntry) {
+    window.resolveLocalFileSystemURL(filePath, function (fileEntry) {
         console.log('read fileEntry: ' + fileEntry.fullPath);
         fileEntry.file(function (file) {
             console.log('read file - size: ' + file.size);
             //window.open(file.toURL(), '_blank', 'location=no,closebuttoncaption=Close,enableViewportScale=yes');
-            window.open(pathToFile, '_blank', 'location=no,closebuttoncaption=Close,enableViewportScale=yes');
+            window.open(filePath, '_blank', 'location=no,closebuttoncaption=Close,enableViewportScale=yes');
             //window.plugins.fileOpener.open("file:///" + file.fullPath);
             //window.plugins.fileOpener.open("file:///sdcard/Android/data/---/www/static/sell/views/print.html");
 
