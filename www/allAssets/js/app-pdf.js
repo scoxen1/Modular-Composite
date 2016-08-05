@@ -478,6 +478,9 @@ function pdfWriteToFileDirect(fileName, data, callBackFn) {
 }
 
 function zReadFromFile(fileName, callBackFn) {
+	openFile(filePath);
+	return;
+
     var pathToFile = localDataDirectory() + fileName;
     console.log('read pathToFile: ' + pathToFile);
     window.open(pathToFile, '_system');
