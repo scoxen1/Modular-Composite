@@ -5,27 +5,25 @@ var _writeToLog = true;
 //-----------------------------------------------------------------------------------
 //      Wire up events
 //-----------------------------------------------------------------------------------
-function appLogInit()
-{
-	//hide message
-	$('.message-container span.icon-close').on('tapstart', function(){
-	//$(document).on('tap', '.message-container span.icon-close', function () {
-		return HideMessage();
-	});
+function appLogInit() {
+    //hide message
+    $('.message-container span.icon-close').on('tapstart', function () {
+        //$(document).on('tap', '.message-container span.icon-close', function () {
+        return HideMessage();
+    });
 
-	//hide message
-	$('.message-container-bg').on('tapstart', function(){
-	//$(document).on('tap', '.message-container-bg', function () {
-		return HideMessage();
-	});
+    //hide message
+    $('.message-container-bg').on('tapstart', function () {
+        //$(document).on('tap', '.message-container-bg', function () {
+        return HideMessage();
+    });
 
 }
 
 //-----------------------------------------------------------------------------------
 //      get target environment - data access and logging use this to determine how to proceed
 //-----------------------------------------------------------------------------------
-function IsEnvironmentAIR()
-{
+function IsEnvironmentAIR() {
     return (_targetEnvironment == 'AIR');
 }
 
@@ -49,13 +47,13 @@ function IsEnvironmentPHONEGAP() {
 function LogMessage(message) {
     if (!_writeToLog) return;
     //log to console
-	if (!IsEnvironmentAIR()) {
-		console.log(message);
-	}
-	else {
-	    air.trace(message);
-	}
-	//log to debug console page
+    if (!IsEnvironmentAIR()) {
+        console.log(message);
+    }
+    else {
+        air.trace(message);
+    }
+    //log to debug console page
     $('div.debug-console').append('<p>' + message + '</p>');
 }
 
@@ -83,26 +81,26 @@ function ShowMessage(title, message, type, sender) {
     messageContainer.show();
     //expect an element object
     //posiiton based on location of sender button
-//SC - position at sender requires jQueryUI which we don't have
-//reference to - check compatability w/ Air before uncommenting
-/*
-    if (sender != undefined) {
-        messageContainer.position({
-            my: "center",
-            at: "center",
-            of: sender,
-            collision: "fit"
-        });
-    }
-        //position center of screen or close to button calling event
-    else {
-*/
-        var toppos = ($(window).height() / 2) - (messageContainer.outerHeight() / 2);
-        var leftpos = ($(window).width() / 2) - (messageContainer.outerWidth() / 2);
-        messageContainer.css('top', toppos).css('left', leftpos);
-        //scroll so we can see the message
-        $("html, body").animate({ scrollTop: messageContainer.offset().top - 40 }, 0);
-//    }
+    //SC - position at sender requires jQueryUI which we don't have
+    //reference to - check compatability w/ Air before uncommenting
+    /*
+        if (sender != undefined) {
+            messageContainer.position({
+                my: "center",
+                at: "center",
+                of: sender,
+                collision: "fit"
+            });
+        }
+            //position center of screen or close to button calling event
+        else {
+    */
+    var toppos = ($(window).height() / 2) - (messageContainer.outerHeight() / 2);
+    var leftpos = ($(window).width() / 2) - (messageContainer.outerWidth() / 2);
+    messageContainer.css('top', toppos).css('left', leftpos);
+    //scroll so we can see the message
+    $("html, body").animate({ scrollTop: messageContainer.offset().top - 40 }, 0);
+    //    }
 
 }
 

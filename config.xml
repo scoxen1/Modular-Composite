@@ -7,6 +7,7 @@
   <content src="index.html"/>
   <preference name="phonegap-version" value="cli-5.2.0" />
   <preference name="permissions" value="none"/>
+  <preference name="orientation" value="landscape"/>
   <preference name="target-device" value="universal"/>
   <preference name="fullscreen" value="false"/>
   <preference name="webviewbounce" value="true"/>
@@ -23,9 +24,6 @@
   <preference name="StatusBarStyle" value="lightcontent" />
   <preference name="StatusBarOverlaysWebView" value="false" />
   <preference name="SplashScreenDelay" value="2000" />
-  <!-- Alternative version to fileOpener2 
-  <plugin name="com.cordova.plugins.fileopener" spec="1.0.1" source="pgb" />
-  -->
 	<plugin name="cordova-plugin-console" spec="0.2.13" />
 	<plugin name="cordova-plugin-device" spec="0.3.0" />
 	<plugin name="cordova-plugin-device-orientation" spec="0.3.11" />

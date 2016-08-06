@@ -239,7 +239,7 @@ $(function () {
     //----------------------------------------------------------------------------------
     //		Debug log - show
     //----------------------------------------------------------------------------------
-    $("li.btn-debug-show").on("tap", function () {
+    $("li.btn-debug-show").on("tapstart", function () {
         try {
             HideAllPagesAndNavButtons();
             LogMessage(_moduleName_menu + ": btn-debug-show - show log");
@@ -256,6 +256,26 @@ $(function () {
         }
         return false;
     });
+
+/*debugging only
+    //----------------------------------------------------------------------------------
+    //		image pdf gen sample - show
+    //----------------------------------------------------------------------------------
+    $("li.btn-pdf-image-gen").on("tapstart", function () {
+        try {
+            HideAllPagesAndNavButtons();
+            LogMessage(_moduleName_menu + ": pdf-image-gen - image test");
+            $("#pdf-image-gen").show();
+            _currentPageId = 'pdf-image-gen';
+            closeMainMenu();
+        }
+        catch (error) {
+            ShowMessage(_applicationName, error.message, 'error', $(this));
+            LogMessage(_moduleName_menu + ": " + $(this).attr('id') + " - Error: " + error.message + '...Details: ' + error.details);
+        }
+        return false;
+    });
+*/
 
 });
 

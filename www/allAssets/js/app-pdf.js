@@ -102,7 +102,7 @@ function _buildPDFDoc(quote) {
     doc.setFontSize(fontSizeMedium);
     doc.setTextColor(45, 66, 117);
     //var wrapTextCustomerName = doc.splitTextToSize(quote.Customer.Name, colWidth);
-    var wrapTextCustomerName = splitTextToSize(doc, quote.Customer.Name, colWidth);
+    var wrapTextCustomerName = doc.splitTextToSize( quote.Customer.Name, colWidth);
 
     doc.text(xCoordTwo, yCoordTwo, wrapTextCustomerName); // quote number 
     yCoordTwo += yCoordOffset;
@@ -118,7 +118,7 @@ function _buildPDFDoc(quote) {
         wrapTextCustomerInfo = wrapTextCustomerInfo.replace(/(\r\n|\n|\r)/gm, "");
         wrapTextCustomerInfo = wrapTextCustomerInfo.replace(/\t/gm, " ");
     }
-    wrapTextCustomerInfo = splitTextToSize(doc, wrapTextCustomerInfo, colWidth);
+    wrapTextCustomerInfo = doc.splitTextToSize( wrapTextCustomerInfo, colWidth);
     doc.text(xCoordTwo, yCoordTwo, wrapTextCustomerInfo);
     yCoordTwo += yCoordOffset;
     doc.setFontSize(fontSizeMedium);
@@ -212,7 +212,7 @@ function _buildPDFDoc(quote) {
         if (item.ShowInList) {
             var wrapTextBenefit = '';
             if (benefit != '') {
-                wrapTextBenefit = splitTextToSize(doc, 'Benefit: ' + benefit, colWidth);
+                wrapTextBenefit = doc.splitTextToSize( 'Benefit: ' + benefit, colWidth);
             }
             //col 1 or col 2 - odds in col one
             if (isOdd(i)) {
@@ -247,7 +247,7 @@ function _buildPDFDoc(quote) {
 
             var wrapTextBenefit = '';
             if (benefit != '') {
-                wrapTextBenefit = splitTextToSize(doc, 'Benefit: ' + benefit, colWidth);
+                wrapTextBenefit = doc.splitTextToSize( 'Benefit: ' + benefit, colWidth);
                 yCoordThree += yCoordOffset;
                 doc.setTextColor(33, 35, 34);
                 doc.text(xCoordThree, yCoordThree, wrapTextBenefit);
@@ -263,6 +263,21 @@ function _buildPDFDoc(quote) {
 }
 
 function isOdd(num) { return num % 2; }
+
+//----------------------------------------------------------------------------------
+//		openPDFInViewer
+//----------------------------------------------------------------------------------
+function openPDFInViewer(quote) {
+
+    var pdfFilePath = _pdfFilePath(quote);
+
+    LogMessage(_moduleName_appPDFHelper + ": openPDFInViewer - " + pdfFilePath);
+
+    //generate the PDF file first
+    var doc = _buildPDFDoc(quote);
+    //save
+    savePDFToDisk(doc, pdfFilePath);
+}
 
 //----------------------------------------------------------------------------------
 //		Create a PDF doc using jsPDF
@@ -297,6 +312,8 @@ function savePDFToDisk(doc, pdfFilePath) {
     var len = pdfString.length;
     var aBuffer = new ArrayBuffer(len), u8 = new Uint8Array(aBuffer);
     while (len--) u8[len] = pdfString.charCodeAt(len);
+
+/* Used during dev to figure out which format producerd desired result
     //now do a second conversion to take the Uint8Array and convert into bytearray which
     //can then be saved 
     var fromCharCode = String.fromCharCode;
@@ -342,6 +359,7 @@ function savePDFToDisk(doc, pdfFilePath) {
     };
     //var btoa = doc.output('btoa');
     var oBtoa = btoa(doc.output());
+*/
 
     //PDF saves AND has images!!!
     pdfWriteToFileDirect(pdfFilePath, aBuffer, onWriteComplete);
@@ -385,29 +403,6 @@ function savePDFToDisk(doc, pdfFilePath) {
     //downloadFile("BAD_FORMAT_8_" + pdfFilePath, doc.output("datauristring"));
 }
 
-function downloadFile(fileName, datauristring) {
-    var filePath = localDataDirectory() + fileName;
-    LogMessage(_moduleName_appPDFHelper + ": downloadFile - " + filePath);
-
-    var fileTransfer = new FileTransfer();
-    //var uri = encodeURI("http://some.server.com/download.php");
-    var uri = datauristring;
-
-    fileTransfer.download(
-        uri,
-        filePath,
-        function (entry) {
-            console.log("download complete: " + entry.toURL());
-        },
-        function (error) {
-            console.log("download error source " + error.source);
-            console.log("download error target " + error.target);
-            console.log("download error code" + error.code);
-        },
-        false
-    );
-}
-
 function onWriteComplete(fileName) {
     LogMessage(_moduleName_appPDFHelper + ": onWriteComplete");
     openFile(fileName);
@@ -426,6 +421,30 @@ function localDataDirectory() {
         return cordova.file.documentsDirectory;
     }
 };
+
+function pdfWriteToFileDirect(fileName, data, callBackFn) {
+    window.resolveLocalFileSystemURL(localDataDirectory(), function (directoryEntry) {
+        LogMessage(_moduleName_appPDFHelper + ": pdfWriteToFileDirect: " + fileName + ", full Path: " + directoryEntry.fullPath);
+        directoryEntry.getFile(fileName, { create: true }, function (fileEntry) {
+            fileEntry.createWriter(function (fileWriter) {
+                fileWriter.onwriteend = function (e) {
+                    //callback to take some action once write completes
+                    LogMessage(_moduleName_appPDFHelper + ": pdfWriteToFileDirect: write data - end");
+                    callBackFn(fileName);
+                };
+
+                fileWriter.onerror = function (e) {
+                    ShowMessage('Save Quote PDF', 'An error occurred saving ' + fileName, 'error', $(this));
+                    LogMessage(_moduleName_appPDFHelper + ": pdfWriteToFileDirect Error: " + fileName + ". Error details: " + e.toString());
+                };
+
+                LogMessage(_moduleName_appPDFHelper + ": pdfWriteToFileDirect: write data - start");
+                fileWriter.write(data);
+            }, fileErrorHandler.bind(null, fileName));
+        }, fileErrorHandler.bind(null, fileName));
+    }, fileErrorHandler.bind(null, fileName));
+}
+
 
 // Open File from disk using fileOpener2 plugin
 function openFile(fileName) {
@@ -447,19 +466,70 @@ function openFile(fileName) {
     );
 }
 
-var BASE64_MARKER = ';base64,';
-function convertDataURIToBinary(dataURI) {
-    var base64Index = dataURI.indexOf(BASE64_MARKER) + BASE64_MARKER.length;
-    var base64 = dataURI.substring(base64Index);
-    var raw = window.atob(base64);
-    var rawLength = raw.length;
-    var array = new Uint8Array(new ArrayBuffer(rawLength));
+var fileErrorHandler = function (e, fileName) {
+    var msg = 'An error has occurred generating the PDF for ' + fileName + '. ';
 
-    for (i = 0; i < rawLength; i++) {
-        array[i] = raw.charCodeAt(i);
-    }
-    return array;
+    switch (e.code) {
+        case FileError.QUOTA_EXCEEDED_ERR:
+            msg += ' Storage quota exceeded.';
+            break;
+        case FileError.NOT_FOUND_ERR:
+            msg += ' File not found.';
+            break;
+        case FileError.SECURITY_ERR:
+            msg += ' Security error.';
+            break;
+        case FileError.INVALID_MODIFICATION_ERR:
+            msg += ' Invalid modification.';
+            break;
+        case FileError.INVALID_STATE_ERR:
+            msg += ' Invalid state.';
+            break;
+        default:
+            msg = '';
+            break;
+    };
+
+    ShowMessage('Open Quote PDF', msg, 'error', $(this));
+    LogMessage(_moduleName_appPDFHelper + ": fileErrorHandler: " + msg);
 }
+
+//function downloadFile(fileName, datauristring) {
+//    var filePath = localDataDirectory() + fileName;
+//    LogMessage(_moduleName_appPDFHelper + ": downloadFile - " + filePath);
+
+//    var fileTransfer = new FileTransfer();
+//    //var uri = encodeURI("http://some.server.com/download.php");
+//    var uri = datauristring;
+
+//    fileTransfer.download(
+//        uri,
+//        filePath,
+//        function (entry) {
+//            console.log("download complete: " + entry.toURL());
+//        },
+//        function (error) {
+//            console.log("download error source " + error.source);
+//            console.log("download error target " + error.target);
+//            console.log("download error code" + error.code);
+//        },
+//        false
+//    );
+//}
+
+//var BASE64_MARKER = ';base64,';
+//function convertDataURIToBinary(dataURI) {
+//    var base64Index = dataURI.indexOf(BASE64_MARKER) + BASE64_MARKER.length;
+//    var base64 = dataURI.substring(base64Index);
+//    var raw = window.atob(base64);
+//    var rawLength = raw.length;
+//    var array = new Uint8Array(new ArrayBuffer(rawLength));
+
+//    for (i = 0; i < rawLength; i++) {
+//        array[i] = raw.charCodeAt(i);
+//    }
+//    return array;
+//}
 
 //function zWriteToFile(fileName, data, callBackFn) {
 //    fileName = "sc-test.txt";
@@ -488,536 +558,451 @@ function convertDataURIToBinary(dataURI) {
 //    }, fileErrorHandler.bind(null, fileName));
 //}
 
-function pdfWriteToFileDirect(fileName, data, callBackFn) {
-    window.resolveLocalFileSystemURL(localDataDirectory(), function (directoryEntry) {
-        LogMessage(_moduleName_appPDFHelper + ": pdfWriteToFileDirect: " + fileName + ", full Path: " + directoryEntry.fullPath);
-        directoryEntry.getFile(fileName, { create: true }, function (fileEntry) {
-            fileEntry.createWriter(function (fileWriter) {
-                fileWriter.onwriteend = function (e) {
-                    //callback to take some action once write completes
-                    LogMessage(_moduleName_appPDFHelper + ": pdfWriteToFileDirect: write data - end");
-                    callBackFn(fileName);
-                };
+//function pdfWriteToFile(fileName, data, callBackFn) {
+//    window.resolveLocalFileSystemURL(localDataDirectory(), function (directoryEntry) {
+//        console.log('directoryEntry-Full Path:' + directoryEntry.fullPath);
+//        directoryEntry.getFile(fileName, { create: true }, function (fileEntry) {
+//            fileEntry.createWriter(function (fileWriter) {
+//                fileWriter.onwriteend = function (e) {
+//                    // for real-world usage, you might consider passing a success callback
+//                    console.log('fileEntry-Full Path:' + fileEntry.fullPath);
+//                    console.log('Write-complete: ' + fileName);
+//                    callBackFn(fileName);
+//                };
 
-                fileWriter.onerror = function (e) {
-                    ShowMessage('Save Quote PDF', 'An error occurred saving ' + fileName, 'error', $(this));
-                    LogMessage(_moduleName_appPDFHelper + ": pdfWriteToFileDirect Error: " + fileName + ". Error details: " + e.toString());
-                };
+//                fileWriter.onerror = function (e) {
+//                    // you could hook this up with our global error handler, or pass in an error callback
+//                    console.log('Write failed: ' + e.toString());
+//                };
 
-                LogMessage(_moduleName_appPDFHelper + ": pdfWriteToFileDirect: write data - start");
-                fileWriter.write(data);
-            }, fileErrorHandler.bind(null, fileName));
-        }, fileErrorHandler.bind(null, fileName));
-    }, fileErrorHandler.bind(null, fileName));
-}
+//                console.log('Write-start.');
+//                var blob = new Blob([data], { type: 'application/pdf' });
+//                fileWriter.write(blob);
+//            }, fileErrorHandler.bind(null, fileName));
+//        }, fileErrorHandler.bind(null, fileName));
+//    }, fileErrorHandler.bind(null, fileName));
+//}
 
-function pdfWriteToFile(fileName, data, callBackFn) {
-    window.resolveLocalFileSystemURL(localDataDirectory(), function (directoryEntry) {
-        console.log('directoryEntry-Full Path:' + directoryEntry.fullPath);
-        directoryEntry.getFile(fileName, { create: true }, function (fileEntry) {
-            fileEntry.createWriter(function (fileWriter) {
-                fileWriter.onwriteend = function (e) {
-                    // for real-world usage, you might consider passing a success callback
-                    console.log('fileEntry-Full Path:' + fileEntry.fullPath);
-                    console.log('Write-complete: ' + fileName);
-                    callBackFn(fileName);
-                };
+//function readFromFile(fileName, callBackFn) {
+//    var filePath = localDataDirectory() + fileName;
+//    LogMessage(_moduleName_appPDFHelper + ": readFromFile - " + filePath);
+//    window.open(filePath, '_system');
+//    //openFile(filePath); - TBD - cordova.plugins undefined
+//    return;
+//    window.resolveLocalFileSystemURL(filePath, function (fileEntry) {
+//        console.log('read fileEntry: ' + fileEntry.fullPath);
+//        fileEntry.file(function (file) {
+//            console.log('read file - size: ' + file.size);
+//            //window.open(file.toURL(), '_blank', 'location=no,closebuttoncaption=Close,enableViewportScale=yes');
+//            window.open(filePath, '_blank', 'location=no,closebuttoncaption=Close,enableViewportScale=yes');
+//            //window.plugins.fileOpener.open("file:///" + file.fullPath);
+//            //window.plugins.fileOpener.open("file:///sdcard/Android/data/---/www/static/sell/views/print.html");
 
-                fileWriter.onerror = function (e) {
-                    // you could hook this up with our global error handler, or pass in an error callback
-                    console.log('Write failed: ' + e.toString());
-                };
+//            //var reader = new FileReader();
+//            //reader.onloadend = function (e) {
+//            //    console.log('on load end...');
+//            //    callBackFn(this.result);
+//            //    callBackFn(JSON.parse(this.result));
+//            //};
 
-                console.log('Write-start.');
-                var blob = new Blob([data], { type: 'application/pdf' });
-                fileWriter.write(blob);
-            }, fileErrorHandler.bind(null, fileName));
-        }, fileErrorHandler.bind(null, fileName));
-    }, fileErrorHandler.bind(null, fileName));
-}
+//            //reader.readAsText(file);
+//        }, fileErrorHandler.bind(null, fileName));
+//    }, fileErrorHandler.bind(null, fileName));
+//}
 
-function readFromFile(fileName, callBackFn) {
-    var filePath = localDataDirectory() + fileName;
-    LogMessage(_moduleName_appPDFHelper + ": readFromFile - " + filePath);
-    window.open(filePath, '_system');
-    //openFile(filePath); - TBD - cordova.plugins undefined
-    return;
-    window.resolveLocalFileSystemURL(filePath, function (fileEntry) {
-        console.log('read fileEntry: ' + fileEntry.fullPath);
-        fileEntry.file(function (file) {
-            console.log('read file - size: ' + file.size);
-            //window.open(file.toURL(), '_blank', 'location=no,closebuttoncaption=Close,enableViewportScale=yes');
-            window.open(filePath, '_blank', 'location=no,closebuttoncaption=Close,enableViewportScale=yes');
-            //window.plugins.fileOpener.open("file:///" + file.fullPath);
-            //window.plugins.fileOpener.open("file:///sdcard/Android/data/---/www/static/sell/views/print.html");
+///*Read/write sample*/
+//function getAndWriteFile(filename, contents) {
+//    //window.requestFileSystem(type, size, successCallback, opt_errorCallback)
+//    window.resolveLocalFileSystemURL(cordova.file.dataDirectory, function (dir) {
+//        console.log("file data directory..." + dir);
+//        dir.getFile(filename, { create: true }, function (file) {
+//            console.log("file name..." + file);
+//            if (file == null) return;
+//            file.createWriter(function (fileWriter) {
 
-            //var reader = new FileReader();
-            //reader.onloadend = function (e) {
-            //    console.log('on load end...');
-            //    callBackFn(this.result);
-            //    callBackFn(JSON.parse(this.result));
-            //};
+//                fileWriter.seek(fileWriter.length);
 
-            //reader.readAsText(file);
-        }, fileErrorHandler.bind(null, fileName));
-    }, fileErrorHandler.bind(null, fileName));
-}
+//                var blob = new Blob("my test file contents", { type: 'text/plain' });
+//                fileWriter.write(blob);
+//                fileWriter.write(contents);
+//                alert("ok, in theory i worked");
+//            }, onCreateWriterFail);
+//        });
+//    });
+//}
 
-var fileErrorHandler = function (fileName, e) {
-    var msg = '';
+//function onCreateWriterFail(evt) {
+//    console.log("Error...:" + evt);
+//}
 
-    switch (e.code) {
-        case FileError.QUOTA_EXCEEDED_ERR:
-            msg = 'Storage quota exceeded';
-            break;
-        case FileError.NOT_FOUND_ERR:
-            msg = 'File not found';
-            break;
-        case FileError.SECURITY_ERR:
-            msg = 'Security error';
-            break;
-        case FileError.INVALID_MODIFICATION_ERR:
-            msg = 'Invalid modification';
-            break;
-        case FileError.INVALID_STATE_ERR:
-            msg = 'Invalid state';
-            break;
-        default:
-            msg = 'Unknown error';
-            break;
-    };
+//////////////Get the Root Directory and open in in app browser a json file///////
+//function viewFile(filename) {
+//    window.requestFileSystem(4, 0, function (fs) {
+//        console.log("dataDirectory = " + cordova.file.dataDirectory);
+//        //alert("root = " + fs.root.toURL());
+//        fs.root.getFile(filename, { create: false, exclusive: true });
+//        window.open(cordova.file.dataDirectory + '/' + filename, '_blank', 'location=yes');
+//    }, function () {
+//        alert("failed to get file system");
+//    });
 
-    console.log('Error (' + fileName + '): ' + msg);
-}
-
-/*Read/write sample*/
-function getAndWriteFile(filename, contents) {
-    //window.requestFileSystem(type, size, successCallback, opt_errorCallback)
-    window.resolveLocalFileSystemURL(cordova.file.dataDirectory, function (dir) {
-        console.log("file data directory..." + dir);
-        dir.getFile(filename, { create: true }, function (file) {
-            console.log("file name..." + file);
-            if (file == null) return;
-            file.createWriter(function (fileWriter) {
-
-                fileWriter.seek(fileWriter.length);
-
-                var blob = new Blob("my test file contents", { type: 'text/plain' });
-                fileWriter.write(blob);
-                fileWriter.write(contents);
-                alert("ok, in theory i worked");
-            }, onCreateWriterFail);
-        });
-    });
-}
-
-function onCreateWriterFail(evt) {
-    console.log("Error...:" + evt);
-}
-
-////////////Get the Root Directory and open in in app browser a json file///////
-function viewFile(filename) {
-    window.requestFileSystem(4, 0, function (fs) {
-        console.log("dataDirectory = " + cordova.file.dataDirectory);
-        //alert("root = " + fs.root.toURL());
-        fs.root.getFile(filename, { create: false, exclusive: true });
-        window.open(cordova.file.dataDirectory + '/' + filename, '_blank', 'location=yes');
-    }, function () {
-        alert("failed to get file system");
-    });
-
-}
+//}
 
 
-/*End - Read/write sample*/
+///*End - Read/write sample*/
 
 
 
 
-var _pdfFileName = null;
-var _pdfOutput = null;
+//var _pdfFileName = null;
+//var _pdfOutput = null;
 
-function pg_SaveFile(doc, pdfFilePath) {
-    _pdfFileName = pdfFilePath;
-    console.log("PDF to save: " + _pdfFileName);
+//function pg_SaveFile(doc, pdfFilePath) {
+//    _pdfFileName = pdfFilePath;
+//    console.log("PDF to save: " + _pdfFileName);
 
-    //NEXT SAVE IT TO THE DEVICE'S LOCAL FILE SYSTEM
-    console.log("file system...");
-    _pdfOutput = doc.output();
-    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, gotFS, onFileSystemError);
-    /*
-        window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
+//    //NEXT SAVE IT TO THE DEVICE'S LOCAL FILE SYSTEM
+//    console.log("file system...");
+//    _pdfOutput = doc.output();
+//    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, gotFS, onFileSystemError);
+//    /*
+//        window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
          
-           console.log("fileSystem.name: " + fileSystem.name);
-           console.log("fileSystem.root.name: " + fileSystem.root.name);
-           console.log("fileSystem.root.fullPath: " + fileSystem.root.fullPath);
+//           console.log("fileSystem.name: " + fileSystem.name);
+//           console.log("fileSystem.root.name: " + fileSystem.root.name);
+//           console.log("fileSystem.root.fullPath: " + fileSystem.root.fullPath);
          
-           fileSystem.root.getFile(pdfFilePath, {create: true}, function(entry) {
-              var fileEntry = entry;
-              console.log("Entry: " + entry);
+//           fileSystem.root.getFile(pdfFilePath, {create: true}, function(entry) {
+//              var fileEntry = entry;
+//              console.log("Entry: " + entry);
          
-              entry.createWriter(function(writer) {
-                 writer.onwrite = function(evt) {
-                 console.log("write success");
-                 alert ("write complete");
-                 pg_OpenInViewer(_pdfFileName);
-              };
+//              entry.createWriter(function(writer) {
+//                 writer.onwrite = function(evt) {
+//                 console.log("write success");
+//                 alert ("write complete");
+//                 pg_OpenInViewer(_pdfFileName);
+//              };
          
-              console.log("writing to file");
-                 writer.write( pdfOutput );
-              }, function(error) {
-                 console.log(error);
-              });
+//              console.log("writing to file");
+//                 writer.write( pdfOutput );
+//              }, function(error) {
+//                 console.log(error);
+//              });
          
-           }, function(error){
-              console.log(error);
-           });
-        },
-        function(event){
-         console.log( evt.target.error.code );
-        });
-    }
-    */
-}
+//           }, function(error){
+//              console.log(error);
+//           });
+//        },
+//        function(event){
+//         console.log( evt.target.error.code );
+//        });
+//    }
+//    */
+//}
 
-function gotFS(fileSystem) {
-    fileSystem.root.getFile(_pdfFileName, { create: true, exclusive: false }, gotFileEntry, onFileSystemError);
-}
+//function gotFS(fileSystem) {
+//    fileSystem.root.getFile(_pdfFileName, { create: true, exclusive: false }, gotFileEntry, onFileSystemError);
+//}
 
-function gotFileEntry(fileEntry) {
-    fileEntry.createWriter(gotFileWriter, onFileSystemError);
-}
+//function gotFileEntry(fileEntry) {
+//    fileEntry.createWriter(gotFileWriter, onFileSystemError);
+//}
 
-function gotFileWriter(writer) {
-    writer.onwriteend = function (evt) {
-        console.log("contents of file now 'some sample text'");
-        writer.truncate(11);
-        writer.onwriteend = function (evt) {
-            console.log("contents of file now 'some sample'");
-            writer.seek(4);
-            writer.write(" different text");
-            writer.onwriteend = function (evt) {
-                console.log("contents of file now 'some different text'");
-            }
-        };
-    };
-    writer.write("some sample text");
-}
-
-
-function pg_OpenInViewer(pdfFilePath) {
-    _pdfFileName = pdfFilePath;
-    console.log("PDF to save: " + _pdfFileName);
-    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, onGotFileSystem, onFileSystemError);
-}
-
-function onGotFileSystem(fileSystem) {
-    fileSystem.root.getFile(_pdfFileName, null, onGotFileEntry, onFileSystemError);
-}
-
-function onGotFileEntry(fileEntry) {
-    fileEntry.file(onGotFile, onFileSystemError);
-}
-
-function onGotFile(file) {
-    readDataUrl(file);
-}
-
-function readDataUrl(file) {
-    var reader = new FileReader();
-    reader.onloadend = function (evt) {
-        console.log("Read as data URL");
-        console.log(evt.target.result);
-    };
-    reader.readAsDataURL(file);
-}
-
-function onFileSystemError(evt) {
-    console.log("on File System Error: " + evt.target.error.code);
-}
+//function gotFileWriter(writer) {
+//    writer.onwriteend = function (evt) {
+//        console.log("contents of file now 'some sample text'");
+//        writer.truncate(11);
+//        writer.onwriteend = function (evt) {
+//            console.log("contents of file now 'some sample'");
+//            writer.seek(4);
+//            writer.write(" different text");
+//            writer.onwriteend = function (evt) {
+//                console.log("contents of file now 'some different text'");
+//            }
+//        };
+//    };
+//    writer.write("some sample text");
+//}
 
 
-//----------------------------------------------------------------------------------
-//		openPDFInViewer
-//----------------------------------------------------------------------------------
-function openPDFInViewer(quote) {
+//function pg_OpenInViewer(pdfFilePath) {
+//    _pdfFileName = pdfFilePath;
+//    console.log("PDF to save: " + _pdfFileName);
+//    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, onGotFileSystem, onFileSystemError);
+//}
 
-    //    var pdfFilePath = _pdfFilePath(quote);
-    //	Quote_Update(quote);
-    //	quoteView_load();
-    //	var htmlData = $('#quote-wrapper').html();
-    //	window.html2pdf.create(
-    //		"<html><head></head><body>" + htmlData + "</body></html>",
-    //		"~/Documents/voith/modular-composite/" + pdfFilePath, // on iOS,
-    //		// "test.pdf", on Android (will be stored in /mnt/sdcard/at.modalog.cordova.plugin.html2pdf/test.pdf)
-    //		onCreatePDF_Success,
-    //		onCreatePDF_Error
-    //	);
+//function onGotFileSystem(fileSystem) {
+//    fileSystem.root.getFile(_pdfFileName, null, onGotFileEntry, onFileSystemError);
+//}
 
-    //     pdf.htmlToPDF({
-    //            data: "<html><head></head><body>" + htmlData + "</body></html>",
-    //            documentSize: "A4",
-    //            landscape: "portrait",
-    //            type: "base64"
-    //       }, onCreatePDF_Success, onCreatePDF_Error);
-    //return;
+//function onGotFileEntry(fileEntry) {
+//    fileEntry.file(onGotFile, onFileSystemError);
+//}
 
-    var pdfFilePath = _pdfFilePath(quote);
+//function onGotFile(file) {
+//    readDataUrl(file);
+//}
 
-    LogMessage(_moduleName_appPDFHelper + ": openPDFInViewer - " + pdfFilePath);
+//function readDataUrl(file) {
+//    var reader = new FileReader();
+//    reader.onloadend = function (evt) {
+//        console.log("Read as data URL");
+//        console.log(evt.target.result);
+//    };
+//    reader.readAsDataURL(file);
+//}
 
-    //generate the PDF file first
-    var doc = _buildPDFDoc(quote);
-    //save
-    savePDFToDisk(doc, pdfFilePath);
-}
+//function onFileSystemError(evt) {
+//    console.log("on File System Error: " + evt.target.error.code);
+//}
 
-function onCreatePDF_Success() {
-    ShowMessage('Generate PDF', 'The PDF was saved', 'info', null);
-}
 
-function onCreatePDF_Error() {
-    ShowMessage('Generate PDF', 'An error occurred generating the PDF', 'error', null);
-}
+//function onCreatePDF_Success() {
+//    ShowMessage('Generate PDF', 'The PDF was saved', 'info', null);
+//}
 
-// Note, all sizing inputs for this function must be in "font measurement units"
-// By default, for PDF, it's "point".
-var splitParagraphIntoLines = function (text, maxlen, options) {
-    // at this time works only on Western scripts, ones with space char
-    // separating the words. Feel free to expand.
+//function onCreatePDF_Error() {
+//    ShowMessage('Generate PDF', 'An error occurred generating the PDF', 'error', null);
+//}
 
-    if (!options) {
-        options = {}
-    }
+//// Note, all sizing inputs for this function must be in "font measurement units"
+//// By default, for PDF, it's "point".
+//var splitParagraphIntoLines = function (text, maxlen, options) {
+//    // at this time works only on Western scripts, ones with space char
+//    // separating the words. Feel free to expand.
 
-    var line = []
-	, lines = [line]
-	, line_length = options.textIndent || 0
-	, separator_length = 0
-	, current_word_length = 0
-	, word
-	, widths_array
-	, words = text.split(' ')
-	, spaceCharWidth = getCharWidthsArray(' ', options)[0]
-	, i, l, tmp, lineIndent
+//    if (!options) {
+//        options = {}
+//    }
 
-    if (options.lineIndent === -1) {
-        lineIndent = words[0].length + 2;
-    } else {
-        lineIndent = options.lineIndent || 0;
-    }
-    if (lineIndent) {
-        var pad = Array(lineIndent).join(" "), wrds = [];
-        words.map(function (wrd) {
-            wrd = wrd.split(/\s*\n/);
-            if (wrd.length > 1) {
-                wrds = wrds.concat(wrd.map(function (wrd, idx) {
-                    return (idx && wrd.length ? "\n" : "") + wrd;
-                }));
-            } else {
-                wrds.push(wrd[0]);
-            }
-        });
-        words = wrds;
-        lineIndent = getStringUnitWidth(pad, options);
-    }
+//    var line = []
+//	, lines = [line]
+//	, line_length = options.textIndent || 0
+//	, separator_length = 0
+//	, current_word_length = 0
+//	, word
+//	, widths_array
+//	, words = text.split(' ')
+//	, spaceCharWidth = getCharWidthsArray(' ', options)[0]
+//	, i, l, tmp, lineIndent
 
-    for (i = 0, l = words.length; i < l; i++) {
-        var force = 0;
+//    if (options.lineIndent === -1) {
+//        lineIndent = words[0].length + 2;
+//    } else {
+//        lineIndent = options.lineIndent || 0;
+//    }
+//    if (lineIndent) {
+//        var pad = Array(lineIndent).join(" "), wrds = [];
+//        words.map(function (wrd) {
+//            wrd = wrd.split(/\s*\n/);
+//            if (wrd.length > 1) {
+//                wrds = wrds.concat(wrd.map(function (wrd, idx) {
+//                    return (idx && wrd.length ? "\n" : "") + wrd;
+//                }));
+//            } else {
+//                wrds.push(wrd[0]);
+//            }
+//        });
+//        words = wrds;
+//        lineIndent = getStringUnitWidth(pad, options);
+//    }
 
-        word = words[i]
-        if (lineIndent && word[0] == "\n") {
-            word = word.substr(1);
-            force = 1;
-        }
-        widths_array = getCharWidthsArray(word, options)
-        current_word_length = getArraySum(widths_array)
+//    for (i = 0, l = words.length; i < l; i++) {
+//        var force = 0;
 
-        if (line_length + separator_length + current_word_length > maxlen || force) {
-            if (current_word_length > maxlen) {
-                // this happens when you have space-less long URLs for example.
-                // we just chop these to size. We do NOT insert hiphens
-                tmp = splitLongWord(word, widths_array, maxlen - (line_length + separator_length), maxlen)
-                // first line we add to existing line object
-                line.push(tmp.shift()) // it's ok to have extra space indicator there
-                // last line we make into new line object
-                line = [tmp.pop()]
-                // lines in the middle we apped to lines object as whole lines
-                while (tmp.length) {
-                    lines.push([tmp.shift()]) // single fragment occupies whole line
-                }
-                current_word_length = getArraySum(widths_array.slice(word.length - line[0].length))
-            } else {
-                // just put it on a new line
-                line = [word]
-            }
+//        word = words[i]
+//        if (lineIndent && word[0] == "\n") {
+//            word = word.substr(1);
+//            force = 1;
+//        }
+//        widths_array = getCharWidthsArray(word, options)
+//        current_word_length = getArraySum(widths_array)
 
-            // now we attach new line to lines
-            lines.push(line)
-            line_length = current_word_length + lineIndent
-            separator_length = spaceCharWidth
+//        if (line_length + separator_length + current_word_length > maxlen || force) {
+//            if (current_word_length > maxlen) {
+//                // this happens when you have space-less long URLs for example.
+//                // we just chop these to size. We do NOT insert hiphens
+//                tmp = splitLongWord(word, widths_array, maxlen - (line_length + separator_length), maxlen)
+//                // first line we add to existing line object
+//                line.push(tmp.shift()) // it's ok to have extra space indicator there
+//                // last line we make into new line object
+//                line = [tmp.pop()]
+//                // lines in the middle we apped to lines object as whole lines
+//                while (tmp.length) {
+//                    lines.push([tmp.shift()]) // single fragment occupies whole line
+//                }
+//                current_word_length = getArraySum(widths_array.slice(word.length - line[0].length))
+//            } else {
+//                // just put it on a new line
+//                line = [word]
+//            }
 
-        } else {
-            line.push(word)
+//            // now we attach new line to lines
+//            lines.push(line)
+//            line_length = current_word_length + lineIndent
+//            separator_length = spaceCharWidth
 
-            line_length += separator_length + current_word_length
-            separator_length = spaceCharWidth
-        }
-    }
+//        } else {
+//            line.push(word)
 
-    if (lineIndent) {
-        var postProcess = function (ln, idx) {
-            return (idx ? pad : '') + ln.join(" ");
-        };
-    } else {
-        var postProcess = function (ln) { return ln.join(" ") };
-    }
+//            line_length += separator_length + current_word_length
+//            separator_length = spaceCharWidth
+//        }
+//    }
 
-    return lines.map(postProcess);
-}
+//    if (lineIndent) {
+//        var postProcess = function (ln, idx) {
+//            return (idx ? pad : '') + ln.join(" ");
+//        };
+//    } else {
+//        var postProcess = function (ln) { return ln.join(" ") };
+//    }
 
-/**
-Splits a given string into an array of strings. Uses 'size' value
-(in measurement units declared as default for the jsPDF instance)
-and the font's "widths" and "Kerning" tables, where availabe, to
-determine display length of a given string for a given font.
+//    return lines.map(postProcess);
+//}
 
-We use character's 100% of unit size (height) as width when Width
-table or other default width is not available.
+///**
+//Splits a given string into an array of strings. Uses 'size' value
+//(in measurement units declared as default for the jsPDF instance)
+//and the font's "widths" and "Kerning" tables, where availabe, to
+//determine display length of a given string for a given font.
 
-@public
-@function
-@param text {String} Unencoded, regular JavaScript (Unicode, UTF-16 / UCS-2) string.
-@param size {Number} Nominal number, measured in units default to this instance of jsPDF.
-@param options {Object} Optional flags needed for chopper to do the right thing.
-@returns {Array} with strings chopped to size.
-*/
-var splitTextToSize = function (doc, text, maxlen, options) {
-    'use strict'
+//We use character's 100% of unit size (height) as width when Width
+//table or other default width is not available.
 
-    if (!options) {
-        options = {}
-    }
+//@public
+//@function
+//@param text {String} Unencoded, regular JavaScript (Unicode, UTF-16 / UCS-2) string.
+//@param size {Number} Nominal number, measured in units default to this instance of jsPDF.
+//@param options {Object} Optional flags needed for chopper to do the right thing.
+//@returns {Array} with strings chopped to size.
+//*/
+//var splitTextToSize = function (doc, text, maxlen, options) {
+//    'use strict'
 
-    var fsize = options.fontSize || doc.internal.getFontSize()
-	, newOptions = (function (options) {
-	    var widths = { 0: 1 }
-		, kerning = {}
+//    if (!options) {
+//        options = {}
+//    }
 
-	    if (!options.widths || !options.kerning) {
-	        var f = doc.internal.getFont(options.fontName, options.fontStyle)
-			, encoding = 'Unicode'
-	        // NOT UTF8, NOT UTF16BE/LE, NOT UCS2BE/LE
-	        // Actual JavaScript-native String's 16bit char codes used.
-	        // no multi-byte logic here
+//    var fsize = options.fontSize || doc.internal.getFontSize()
+//	, newOptions = (function (options) {
+//	    var widths = { 0: 1 }
+//		, kerning = {}
 
-	        if (f.metadata[encoding]) {
-	            return {
-	                widths: f.metadata[encoding].widths || widths
-					, kerning: f.metadata[encoding].kerning || kerning
-	            }
-	        }
-	    } else {
-	        return {
-	            widths: options.widths
-				, kerning: options.kerning
-	        }
-	    }
+//	    if (!options.widths || !options.kerning) {
+//	        var f = doc.internal.getFont(options.fontName, options.fontStyle)
+//			, encoding = 'Unicode'
+//	        // NOT UTF8, NOT UTF16BE/LE, NOT UCS2BE/LE
+//	        // Actual JavaScript-native String's 16bit char codes used.
+//	        // no multi-byte logic here
 
-	    // then use default values
-	    return {
-	        widths: widths
-			, kerning: kerning
-	    }
-	}).call(this, options)
+//	        if (f.metadata[encoding]) {
+//	            return {
+//	                widths: f.metadata[encoding].widths || widths
+//					, kerning: f.metadata[encoding].kerning || kerning
+//	            }
+//	        }
+//	    } else {
+//	        return {
+//	            widths: options.widths
+//				, kerning: options.kerning
+//	        }
+//	    }
 
-    // first we split on end-of-line chars
-    var paragraphs
-    if (Array.isArray(text)) {
-        paragraphs = text;
-    } else {
-        paragraphs = text.split(/\r?\n/);
-    }
+//	    // then use default values
+//	    return {
+//	        widths: widths
+//			, kerning: kerning
+//	    }
+//	}).call(this, options)
 
-    // now we convert size (max length of line) into "font size units"
-    // at present time, the "font size unit" is always 'point'
-    // 'proportional' means, "in proportion to font size"
-    var fontUnit_maxLen = 1.0 * doc.internal.scaleFactor * maxlen / fsize
-    // at this time, fsize is always in "points" regardless of the default measurement unit of the doc.
-    // this may change in the future?
-    // until then, proportional_maxlen is likely to be in 'points'
+//    // first we split on end-of-line chars
+//    var paragraphs
+//    if (Array.isArray(text)) {
+//        paragraphs = text;
+//    } else {
+//        paragraphs = text.split(/\r?\n/);
+//    }
 
-    // If first line is to be indented (shorter or longer) than maxLen
-    // we indicate that by using CSS-style "text-indent" option.
-    // here it's in font units too (which is likely 'points')
-    // it can be negative (which makes the first line longer than maxLen)
-    newOptions.textIndent = options.textIndent ?
-		options.textIndent * 1.0 * doc.internal.scaleFactor / fsize :
-		0
-    newOptions.lineIndent = options.lineIndent;
+//    // now we convert size (max length of line) into "font size units"
+//    // at present time, the "font size unit" is always 'point'
+//    // 'proportional' means, "in proportion to font size"
+//    var fontUnit_maxLen = 1.0 * doc.internal.scaleFactor * maxlen / fsize
+//    // at this time, fsize is always in "points" regardless of the default measurement unit of the doc.
+//    // this may change in the future?
+//    // until then, proportional_maxlen is likely to be in 'points'
 
-    var i, l
-	, output = []
-    for (i = 0, l = paragraphs.length; i < l; i++) {
-        output = output.concat(
-			splitParagraphIntoLines(
-				paragraphs[i]
-				, fontUnit_maxLen
-				, newOptions
-			)
-		)
-    }
+//    // If first line is to be indented (shorter or longer) than maxLen
+//    // we indicate that by using CSS-style "text-indent" option.
+//    // here it's in font units too (which is likely 'points')
+//    // it can be negative (which makes the first line longer than maxLen)
+//    newOptions.textIndent = options.textIndent ?
+//		options.textIndent * 1.0 * doc.internal.scaleFactor / fsize :
+//		0
+//    newOptions.lineIndent = options.lineIndent;
 
-    return output
-}
+//    var i, l
+//	, output = []
+//    for (i = 0, l = paragraphs.length; i < l; i++) {
+//        output = output.concat(
+//			splitParagraphIntoLines(
+//				paragraphs[i]
+//				, fontUnit_maxLen
+//				, newOptions
+//			)
+//		)
+//    }
 
-/**
-Returns an array of length matching length of the 'word' string, with each
-cell ocupied by the width of the char in that position.
+//    return output
+//}
 
-@function
-@param word {String}
-@param widths {Object}
-@param kerning {Object}
-@returns {Array}
-*/
-var getCharWidthsArray = function (text, options) {
+///**
+//Returns an array of length matching length of the 'word' string, with each
+//cell ocupied by the width of the char in that position.
 
-    if (!options) {
-        options = {}
-    }
+//@function
+//@param word {String}
+//@param widths {Object}
+//@param kerning {Object}
+//@returns {Array}
+//*/
+//var getCharWidthsArray = function (text, options) {
 
-    var widths = options.widths ? options.widths : this.internal.getFont().metadata.Unicode.widths
-	, widthsFractionOf = widths.fof ? widths.fof : 1
-	, kerning = options.kerning ? options.kerning : this.internal.getFont().metadata.Unicode.kerning
-	, kerningFractionOf = kerning.fof ? kerning.fof : 1
+//    if (!options) {
+//        options = {}
+//    }
 
-    // console.log("widths, kergnings", widths, kerning)
+//    var widths = options.widths ? options.widths : this.internal.getFont().metadata.Unicode.widths
+//	, widthsFractionOf = widths.fof ? widths.fof : 1
+//	, kerning = options.kerning ? options.kerning : this.internal.getFont().metadata.Unicode.kerning
+//	, kerningFractionOf = kerning.fof ? kerning.fof : 1
 
-    var i, l
-	, char_code
-	, prior_char_code = 0 // for kerning
-	, default_char_width = widths[0] || widthsFractionOf
-	, output = []
+//    // console.log("widths, kergnings", widths, kerning)
 
-    for (i = 0, l = text.length; i < l; i++) {
-        char_code = text.charCodeAt(i)
-        output.push(
-			(widths[char_code] || default_char_width) / widthsFractionOf +
-			(kerning[char_code] && kerning[char_code][prior_char_code] || 0) / kerningFractionOf
-		)
-        prior_char_code = char_code
-    }
+//    var i, l
+//	, char_code
+//	, prior_char_code = 0 // for kerning
+//	, default_char_width = widths[0] || widthsFractionOf
+//	, output = []
 
-    return output
-}
+//    for (i = 0, l = text.length; i < l; i++) {
+//        char_code = text.charCodeAt(i)
+//        output.push(
+//			(widths[char_code] || default_char_width) / widthsFractionOf +
+//			(kerning[char_code] && kerning[char_code][prior_char_code] || 0) / kerningFractionOf
+//		)
+//        prior_char_code = char_code
+//    }
 
-var getArraySum = function (array) {
-    var i = array.length
-	, output = 0
-    while (i) {
-        ; i--;
-        output += array[i]
-    }
-    return output
-}
+//    return output
+//}
+
+//var getArraySum = function (array) {
+//    var i = array.length
+//	, output = 0
+//    while (i) {
+//        ; i--;
+//        output += array[i]
+//    }
+//    return output
+//}
